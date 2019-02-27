@@ -1,31 +1,13 @@
 pipeline:
   build:
     image: plugins/docker
-    repo: username502/vsong_bot
+    repo: username502/sputnik_bot
     secrets: [docker_username, docker_password]
     build_args:
       - DRONE=${DRONE}
       - DRONE_TAG=${DRONE_TAG}
       - DRONE_COMMIT=${DRONE_COMMIT}
       - DRONE_BRANCH=${DRONE_BRANCH}
-    when:
-      branch: master
-      event: push
-
-  deploy:
-    image: appleboy/drone-ssh
-    host: bot.guser.ru
-    username: root
-    port: 22
-    secrets: [ssh_key]
-    script:
-      - cd /srv/vsong_bot
-      - git pull --rebase --no-autostash
-      - docker-compose pull
-      - docker-compose scale bot=2
-      - sleep 5
-      - docker-compose scale bot=1
-      - docker-compose up -d
     when:
       branch: master
       event: push
