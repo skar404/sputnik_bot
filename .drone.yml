@@ -25,7 +25,6 @@ pipeline:
       - docker-compose scale bot=2
       - sleep 5
       - docker-compose scale bot=1
-      - docker-compose up -d
     when:
       branch: master
       event: push
