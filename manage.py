@@ -11,8 +11,13 @@ async def handle(request):
     return web.Response(text='Hello world')
 
 
+async def ping(request):
+    return web.Response(text='pong')
+
+
 async def init():
     """Initialize the application server."""
     app = web.Application()
-    app.router.add_routes([web.get('/', handle)])
+    app.router.add_routes([web.get('/', handle),
+                           web.get('/ping', ping)])
     return app
