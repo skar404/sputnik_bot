@@ -1,0 +1,24 @@
+version: '3'
+services:
+  bot:
+    image: username502/sputnik_bot:latest
+    restart: always
+    expose:
+      - "8080"
+
+  nginx:
+    image: umputun/nginx-le:latest
+    restart: always
+    volumes:
+      - /srv/docker/ssl:/etc/nginx/ssl
+      - ./nginx/app.conf:/etc/nginx/service.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - TZ=GMT
+      - LETSENCRYPT=true
+      - LE_EMAIL=skar404@gamil.com
+      - LE_FQDN=bot.guser.ru
+    depends_on:
+      - bot
