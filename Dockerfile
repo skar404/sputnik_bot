@@ -11,4 +11,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 ADD . /app
 
-CMD ["gunicorn", "app:init_app", "-c", "gunicorn_conf.py"]
+CMD ["gunicorn", "manage:init", "-c", "gunicorn_conf.py"]
