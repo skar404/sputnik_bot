@@ -1,15 +1,18 @@
+import asyncio
+
+import uvloop
 from aiohttp import web
 
 
-async def handle(_request):
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
+
+async def handle(request):
     return web.Response(text='Hello world')
 
 
-def init():
+async def init():
+    """Initialize the application server."""
     app = web.Application()
-    app.add_routes([web.get('/', handle)])
-    web.run_app(app, host='0.0.0.0', port=8080)
-
-
-if __name__ == '__main__':
-    init()
+    app.router.add_routes([web.get('/', handle)])
+    return app
