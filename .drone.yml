@@ -1,7 +1,7 @@
 pipeline:
   build:
     image: plugins/docker
-    repo: username502/sputnik_bot
+    repo: username502/vsong_bot
     secrets: [docker_username, docker_password]
     build_args:
       - DRONE=${DRONE}
