@@ -22,9 +22,9 @@ pipeline:
       - cd /srv/sputnik_bot
       - git pull --rebase --no-autostash
       - docker-compose pull
-      - docker-compose scale bot=2
-      - sleep 5
+      - docker-compose up -d --scale bot=2
       - docker-compose scale bot=1
+#      - docker-compose up -d --no-deps
     when:
       branch: master
       event: push
