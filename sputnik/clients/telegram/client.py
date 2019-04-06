@@ -10,6 +10,8 @@ class ParseMode:
 class TelegramClient(BaseClient):
     BASE_URL = 'https://api.telegram.org/bot{bot_token}/'.format(bot_token=BOT_TOKEN)
 
+    VERIFY_SSL = False
+
     async def update_web_hook(self):
         req = await self.post(url=self._get_url('setWebhook?url={url_web_hook}', url_web_hook=BOT_WEB_HOOK))
 

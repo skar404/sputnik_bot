@@ -1,8 +1,8 @@
 from dataclasses import dataclass
+from typing import Optional
 
 import aiohttp
 import async_timeout
-from typing import Optional
 
 from aiohttp import ContentTypeError
 
@@ -17,6 +17,7 @@ class RequestData:
 class BaseClient:
     TIMEOUT: int = 10
     BASE_URL: str = None
+    VERIFY_SSL: bool = True
 
     def _get_url(self, url: str, **kwargs):
         return self.BASE_URL + url.format(**kwargs)
@@ -31,7 +32,7 @@ class BaseClient:
         req = RequestData()
 
         with async_timeout.timeout(self.TIMEOUT):
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=self.VERIFY_SSL)) as session:
                 async with session.request(*args, **kwargs) as response:
                     req.code = response.status
                     req.text = await response.text()
