@@ -1,23 +1,24 @@
-import asyncio
+import logging
 
-import uvloop
-from aiohttp import web
+from manager import Manager
 
-
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+from sputnik.main import run_api
 
 
-async def handle(request):
-    return web.Response(text='Hello world')
+LOGGER_FORMAT = '[%(asctime)s] [%(levelname)s] %(name)s - %(message)s'
+logging.basicConfig(
+    format=LOGGER_FORMAT,
+    level=logging.DEBUG,
+)
 
 
-async def ping(request):
-    return web.Response(text='pong')
+manager = Manager()
 
 
-async def init():
-    """Initialize the application server."""
-    app = web.Application()
-    app.router.add_routes([web.get('/', handle),
-                           web.get('/ping', ping)])
-    return app
+@manager.command
+def api():
+    run_api()
+
+
+if __name__ == "__main__":
+    manager.main()

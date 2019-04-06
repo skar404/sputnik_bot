@@ -11,4 +11,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 ADD . /app
 
-CMD ["gunicorn", "manage:init", "-c", "gunicorn_conf.py"]
+CMD ["gunicorn", "manage:init", "-c", "sputnik/gunicorn_conf.py"]
