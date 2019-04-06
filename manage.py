@@ -20,5 +20,14 @@ def api():
     run_api()
 
 
+@manager.command
+def sandbox():
+    async def run():
+        pass
+
+    import asyncio
+    asyncio.run(run())
+
+
 if __name__ == "__main__":
     manager.main()

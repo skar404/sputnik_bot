@@ -7,9 +7,15 @@ env.read_envfile(os.path.join(BASE_DIR, '.env'))
 
 
 # Setting Gunicorn App
-WORKERS = env.int('WORKERS', default=1)
+WORKERS: int = env.int('WORKERS', default=1)
 
-TIME_OUT = env.int('TIME_OUT', default=300)
+TIME_OUT: int = env.int('TIME_OUT', default=300)
 
-BOT_TOKEN = env.str('BOT_TOKEN')
-BOT_WEB_HOOK = env.str('BOT_WEB_HOOK')
+BOT_TOKEN: str = env.str('BOT_TOKEN', default=None)
+BOT_WEB_HOOK: str = env.str('BOT_WEB_HOOK', default=None)
+
+RSS_FEED: str = env.str('RSS_FEED', default=None)
+SHORT_LINK: str = env.str('SHORT_LINK', default=None)
+
+WEIBO_APP_KEY: str = env.str('WEIBO_APP_KEY', default=None)
+WEIBO_APP_SECRET: str = env.str('WEIBO_APP_SECRET', default=None)

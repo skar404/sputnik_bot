@@ -1,4 +1,17 @@
+from dataclasses import dataclass
+
+import aiohttp
 import async_timeout
+from typing import Optional
+
+from aiohttp import ContentTypeError
+
+
+@dataclass
+class RequestData:
+    json: Optional[dict] = None
+    text: str = None
+    code: int = None
 
 
 class BaseClient:
@@ -8,18 +21,24 @@ class BaseClient:
     def _get_url(self, url: str, **kwargs):
         return self.BASE_URL + url.format(**kwargs)
 
-    async def get(self, *args, **kwargs):
+    async def get(self, *args, **kwargs) -> RequestData:
         return await self._request('GET', *args, **kwargs)
 
-    async def post(self, *args, **kwargs):
+    async def post(self, *args, **kwargs) -> RequestData:
         return await self._request('POST', *args, **kwargs)
 
-    async def _request(self, *args, **kwargs):
-        # from sputnik import pass
-        application = object()
+    async def _request(self, *args, **kwargs) -> RequestData:
+        req = RequestData()
 
         with async_timeout.timeout(self.TIMEOUT):
-            async with application.aiohttp_session.request(*args, **kwargs) as response:
-                req = await response.json()
+            async with aiohttp.ClientSession() as session:
+                async with session.request(*args, **kwargs) as response:
+                    req.code = response.status
+                    req.text = await response.text()
 
-            return req
+                    try:
+                        req.json = await response.json()
+                    except ContentTypeError:
+                        req.json = {}
+
+        return req
