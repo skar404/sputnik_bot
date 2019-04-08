@@ -285,6 +285,20 @@ class MessageSchema(Schema):
     passport_data = Nested(PassportDataSchema)
 
 
+class CallbackQuerySchema(Schema):
+    class Meta:
+        include = {
+            'from': Nested(UserSchema, attribute="from")
+        }
+
+    id = Str()
+    message = Nested(MessageSchema)
+    inline_message_id = Str()
+    chat_instance = Str()
+    data = Str()
+    game_short_name = Str()
+
+
 class WebHookMessageSchema(Schema):
     update_id = Int()
 
@@ -293,3 +307,5 @@ class WebHookMessageSchema(Schema):
     edited_message = Nested(MessageSchema)
     channel_post = Nested(MessageSchema)
     edited_channel_post = Nested(MessageSchema)
+
+    callback_query = Nested(CallbackQuerySchema)

@@ -16,7 +16,7 @@ class Post:
     title: str
     link: str
     guid: str
-    pub_date: str
+    pub_date: datetime
     description: str
     category: str
     enclosure: str
@@ -55,7 +55,7 @@ class SputnikService(SputnikClint):
             title=item.findtext('title'),
             link=item.findtext('link'),
             guid=guid,
-            pub_date=item.findtext('pubDate'),
+            pub_date=datetime.strptime(item.findtext('pubDate'), '%a, %d %b %Y %X %z').replace(tzinfo=None),
             description=item.findtext('description'),
             category=item.findtext('category'),
             enclosure=enclosure.attrib.get('url') if enclosure is not None else None,

@@ -3,11 +3,14 @@ from aiohttp.web_response import Response
 
 from sputnik.bot.views import bot_handler
 from sputnik.clients.telegram.schema import WebHookMessageSchema
+from sputnik.models.main import DataBase
 from sputnik.shortcuts.validation import validation_shame
 from sputnik.shortcuts.view import success
 
 
-async def ping(_request):
+async def ping(request):
+    await DataBase.scalar('SELECT 1;')
+
     return success('pong')
 
 

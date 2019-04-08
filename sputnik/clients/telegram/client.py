@@ -17,14 +17,20 @@ class TelegramClient(BaseClient):
 
         return req
 
-    async def send_message(self, chat_id: str, message: str, parse_mode: ParseMode = ParseMode.MARKDOWN):
+    async def send_message(self, chat_id: str, message: str, parse_mode: ParseMode = ParseMode.MARKDOWN,
+                           eply_markup=None):
+
+        params = {
+            'chat_id': chat_id,
+            'text': message,
+            'parse_mode': parse_mode,
+        }
+        if eply_markup:
+            params.update({'reply_markup': eply_markup})
+
         req = await self.post(
             url=self._get_url('sendMessage'),
-            params={
-                'chat_id': chat_id,
-                'text': message,
-                'parse_mode': parse_mode
-            }
+            json=params
         )
         return req
 

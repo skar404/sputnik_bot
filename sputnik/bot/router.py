@@ -5,6 +5,7 @@ class MessageType:
     COMMAND = 'command'
     TEXT = 'text'
     OTHER = 'other'
+    CALLBACK_QUERY = 'callback_query'
 
 
 @dataclass
@@ -76,4 +77,9 @@ class TelegramRouter:
     def text(self):
         return self.register_route(
             message_type=MessageType.TEXT,
+        )
+
+    def callback_query(self, callback):
+        return self.register_route(
+            message_type=MessageType.CALLBACK_QUERY
         )

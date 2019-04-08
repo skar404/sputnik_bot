@@ -2,7 +2,7 @@ import logging
 
 from manager import Manager
 
-from sputnik.main import run_api
+from sputnik.main import run_app
 
 
 LOGGER_FORMAT = '[%(asctime)s] [%(levelname)s] %(name)s - %(message)s'
@@ -17,7 +17,12 @@ manager = Manager()
 
 @manager.command
 def api():
-    run_api()
+    run_app(api=True)
+
+
+@manager.command
+def schedule():
+    run_app(schedule=True)
 
 
 @manager.command
