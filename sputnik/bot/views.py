@@ -1,6 +1,12 @@
+import logging
+
+import jwt
+
 from sputnik.clients.telegram.client import TelegramSDK
 from sputnik.bot.router import TelegramRouter
-from sputnik.settings import BOT_TOKEN
+from sputnik.clients.weibo import get_authorize_link
+from sputnik.models.post import PostModel
+from sputnik.settings import BOT_TOKEN, JWT_SECRET
 from sputnik.shortcuts.main import users_info
 
 bot_handler = TelegramRouter(bot_token=BOT_TOKEN)
@@ -32,3 +38,27 @@ async def command_help(message, _request):
 
     await TelegramSDK() \
         .send_message(chat_id=message['message']['chat']['id'], message=text)
+
+
+@bot_handler.command(command='weibo')
+@users_info
+async def login_weibo(message, _request):
+    chat_id = message['message']['chat']['id']
+
+    state = jwt.encode({'chat_id': chat_id}, JWT_SECRET)
+    text = 'Для входа в Weibo перейдите по ссылки: [ввойти в waibo]({})'.format(get_authorize_link(state=state))
+
+    await TelegramSDK() \
+        .send_message(chat_id=chat_id, message=text)
+
+
+@bot_handler.callback_query(callback_key='post_message:id')
+@users_info
+async def callback_send_post(message, _request):
+    try:
+        post_id = int(message['callback_query']['data'].split(':')[-1])
+    except ValueError:
+        logging.warning('value error')
+        return
+
+    post_req: PostModel = await PostModel.query.where(PostModel.id == post_id).gino.first()

@@ -40,6 +40,13 @@ class TelegramRouter:
                     return self.get_uri(message_type=MessageType.COMMAND, key=text[1:].strip())
                 else:
                     return self.get_uri(message_type=MessageType.TEXT)
+        elif 'callback_query' in message:
+            if 'data' in message['callback_query']:
+                callback_key = message['callback_query']['data'].split(':')[:-1]
+                if callback_key:
+                    callback_key = ':'.join(callback_key)
+                    return self.get_uri(message_type=MessageType.CALLBACK_QUERY, key=callback_key)
+
         return self.get_uri(message_type=MessageType.OTHER)
 
     async def init_route(self, message, request=None):
@@ -79,7 +86,8 @@ class TelegramRouter:
             message_type=MessageType.TEXT,
         )
 
-    def callback_query(self, callback):
+    def callback_query(self, callback_key):
         return self.register_route(
-            message_type=MessageType.CALLBACK_QUERY
+            message_type=MessageType.CALLBACK_QUERY,
+            key=callback_key
         )

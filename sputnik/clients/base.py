@@ -19,8 +19,8 @@ class BaseClient:
     BASE_URL: str = None
     VERIFY_SSL: bool = True
 
-    def _get_url(self, url: str, **kwargs):
-        return self.BASE_URL + url.format(**kwargs)
+    def _get_url(self, url_name: str, **kwargs):
+        return self.BASE_URL + getattr(self, url_name).format(**kwargs)
 
     async def get(self, *args, **kwargs) -> RequestData:
         return await self._request('GET', *args, **kwargs)

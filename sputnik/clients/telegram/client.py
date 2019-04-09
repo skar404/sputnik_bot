@@ -12,8 +12,10 @@ class TelegramClient(BaseClient):
 
     VERIFY_SSL = False
 
+    set_web_hook_url = 'setWebhook?url={url_web_hook}'
+
     async def update_web_hook(self):
-        req = await self.post(url=self._get_url('setWebhook?url={url_web_hook}', url_web_hook=BOT_WEB_HOOK))
+        req = await self.post(url=self._get_url('set_web_hook_url', url_web_hook=BOT_WEB_HOOK))
 
         return req
 
