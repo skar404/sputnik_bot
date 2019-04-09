@@ -13,6 +13,8 @@ class TelegramClient(BaseClient):
     VERIFY_SSL = False
 
     set_web_hook_url = 'setWebhook?url={url_web_hook}'
+    send_message_url = 'sendMessage'
+    delete_message_url = 'deleteMessage'
 
     async def update_web_hook(self):
         req = await self.post(url=self._get_url('set_web_hook_url', url_web_hook=BOT_WEB_HOOK))
@@ -31,7 +33,7 @@ class TelegramClient(BaseClient):
             params.update({'reply_markup': eply_markup})
 
         req = await self.post(
-            url=self._get_url('sendMessage'),
+            url=self._get_url('send_message_url'),
             json=params
         )
         return req
