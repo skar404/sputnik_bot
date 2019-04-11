@@ -5,7 +5,7 @@ from jwt import DecodeError
 
 from sputnik.bot.views import bot_handler
 from sputnik.clients.telegram.schema import WebHookMessageSchema
-from sputnik.clients.weibo import WeiboService
+from sputnik.clients.weibo_api import WeiboService
 from sputnik.models.main import DataBase
 from sputnik.settings import JWT_SECRET
 from sputnik.shortcuts.validation import validation_shame

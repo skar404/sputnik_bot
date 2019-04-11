@@ -4,7 +4,7 @@ import jwt
 
 from sputnik.clients.telegram.client import TelegramSDK
 from sputnik.bot.router import TelegramRouter
-from sputnik.clients.weibo import get_authorize_link
+from sputnik.clients.weibo_api import get_authorize_link
 from sputnik.models.post import PostModel
 from sputnik.settings import BOT_TOKEN, JWT_SECRET
 from sputnik.shortcuts.main import users_info

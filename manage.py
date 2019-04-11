@@ -28,7 +28,13 @@ def schedule():
 @manager.command
 def sandbox():
     async def run():
-        pass
+        from sputnik.settings import WEIBO_LOGIN
+        from sputnik.clients.weibo_parser import WeiboParserService
+
+        data = await WeiboParserService().get_server_data_in_login(WEIBO_LOGIN)
+
+        breakpoint()
+
 
     import asyncio
     asyncio.run(run())

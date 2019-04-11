@@ -24,6 +24,9 @@ WEIBO_APP_KEY: str = env.str('WEIBO_APP_KEY', default=None)
 WEIBO_APP_SECRET: str = env.str('WEIBO_APP_SECRET', default=None)
 WEIBO_APP_HOST: str = env.str('WEIBO_APP_HOST', default=None)
 
+WEIBO_LOGIN: str = env.str('WEIBO_LOGIN')
+WEIBO_PASSWORD: str = env.str('WEIBO_PASSWORD')
+
 DB_DSN: str = env.str('DB_DSN', default='postgres://postgres:postgres@127.0.0.1:5400/postgres')
 
 POST_USER: List[str] = env.list('POST_USER', default=[])
