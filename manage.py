@@ -28,13 +28,18 @@ def schedule():
 @manager.command
 def sandbox():
     async def run():
-        from sputnik.settings import WEIBO_LOGIN
+        from sputnik.settings import WEIBO_LOGIN, WEIBO_PASSWORD
         from sputnik.clients.weibo_parser import WeiboParserService
+        from sputnik.clients.anti_captcha import AntiCaptchaService
 
-        data = await WeiboParserService().get_server_data_in_login(WEIBO_LOGIN)
+        weibo_service = WeiboParserService()
 
+        auth = await weibo_service.get_server_data_in_login(WEIBO_LOGIN)
+        auth.password = WEIBO_PASSWORD
+        await weibo_service.update_auth_data_set_password_secret(auth)
+
+        data = await weibo_service.login_user(auth)
         breakpoint()
-
 
     import asyncio
     asyncio.run(run())

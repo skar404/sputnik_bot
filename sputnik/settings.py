@@ -33,3 +33,5 @@ POST_USER: List[str] = env.list('POST_USER', default=[])
 ADMIN_USER: List[str] = env.list('ADMIN_USER', default=[])
 
 JWT_SECRET = env.str('JWT_SECRET', default='')
+
+ANTI_CAPTCHA_KEY = env.str('ANTI_CAPTCHA_KEY', default='')
