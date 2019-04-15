@@ -17,15 +17,15 @@ class AntiCaptchaClient(BaseClient):
     create_task_url = 'createTask'
     get_task_url = 'getTaskResult'
 
-    async def crete_captcha_task(self, captcha_url):
+    async def download_captcha_image(self, captcha_url):
         async with aiohttp.ClientSession(
                 connector=aiohttp.TCPConnector(verify_ssl=True)) as session:
             with async_timeout.timeout(self.TIMEOUT):
                 async with session.get(url=captcha_url) as response:
                     captcha_image = await response.read()
+        return base64.b64encode(captcha_image)
 
-        captcha_data = base64.b64encode(captcha_image)
-
+    async def crete_captcha_task(self, captcha_data):
         response = await self.post(
             url=self._get_url('create_task_url'),
             json={
@@ -75,8 +75,11 @@ class AntiCaptchaClient(BaseClient):
 
 class AntiCaptchaService(AntiCaptchaClient):
 
-    async def get_recaptcha_in_url(self, captcha_url):
-        task = await self.crete_captcha_task(captcha_url)
+    async def get_recaptcha_in_url(self, data, download_captcha=True):
+        if download_captcha:
+            await self.download_captcha_image(data)
+
+        task = await self.crete_captcha_task(data)
 
         task_id = task.json['taskId']
 

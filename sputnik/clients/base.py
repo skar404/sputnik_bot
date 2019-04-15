@@ -13,6 +13,10 @@ class RequestData:
     text: str = None
     code: int = None
 
+    headers = None
+    cookies = None
+    request_info = None
+
 
 class BaseClient:
     TIMEOUT: int = 10
