@@ -264,7 +264,6 @@ class WeiboParserService(WeiboParserClient):
 
         weibo_auth.cookies = self.cookies
         self.weibo_auth = weibo_auth
-        return captcha_data
 
     # async def push_image(self, image_base64):
     #     self.push_image
