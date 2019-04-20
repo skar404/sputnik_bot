@@ -11,6 +11,7 @@ import aiohttp
 import async_timeout
 import rsa
 from aiohttp import ContentTypeError, ClientSession
+from marshmallow.compat import urlparse
 
 from sputnik.clients.anti_captcha import AntiCaptchaService
 from sputnik.clients.base import BaseClient, RequestData
@@ -143,7 +144,7 @@ class WeiboParserClient(BaseClient):
         ret = await self.post(login_url, data=data, headers=self.HEADERS)
         return ret
 
-    async def create_new_post(self, message):
+    async def create_new_post(self, message: str, photo_id: str):
         create_post_url = 'https://www.weibo.com/aj/mblog/add?ajwvr=6&__rnd={}'.format(int(random.random() * 100000000))
 
         data = {
@@ -151,7 +152,7 @@ class WeiboParserClient(BaseClient):
             'text': message,
             'appkey': '',
             'style_type': '1',
-            'pic_id': '',
+            'pic_id': photo_id,
             'tid': '',
             'pdetail': '',
             'mid': '',
@@ -186,6 +187,7 @@ class WeiboParserClient(BaseClient):
             'url': 'weibo.com/u/{}'.format(nick),
             'markpos': '1',
             'logo': '1',
+            # копирайт который будет воткнут на фото
             'nick': '@用户{}'.format(nick),
             'marks': '0',
             'app': 'miniblog',
@@ -198,7 +200,7 @@ class WeiboParserClient(BaseClient):
                               data={
                                   'b64_data': image_raw
                               })
-        breakpoint()
+        return ret
 
 
 class WeiboParserService(WeiboParserClient):
@@ -241,6 +243,15 @@ class WeiboParserService(WeiboParserClient):
             .format(int(random.random() * 100000000), weibo_auth.pc_id)
         return captcha_url
 
+    async def check_user_is_login(self, weibo_ajax_login_url):
+        req = await self.get(weibo_ajax_login_url, headers=self.HEADERS)
+
+        uuid_res = re.findall(r'"uniqueid":"(.*?)"', req.text, re.S)
+        if not uuid_res:
+            return False
+        else:
+            return True
+
     async def login_user(self, login, password):
         weibo_auth = await self.get_server_data_in_login(login)
         weibo_auth.password = password
@@ -256,17 +267,20 @@ class WeiboParserService(WeiboParserClient):
             captcha_text = await AntiCaptchaService().get_recaptcha_in_url(captcha_data, download_captcha=False)
 
         req = await self.login_user_in_captcha(weibo_auth, captcha=captcha_text)
-
         weibo_ajax_login_url = re.findall(r'location\.replace\([\'"](.*?)[\'"]\)', req.text)[0]
-        req = await self.get(weibo_ajax_login_url, headers=self.HEADERS)
 
-        uuid_res = re.findall(r'"uniqueid":"(.*?)"', req.text, re.S)[0]
+        is_login = await self.check_user_is_login(weibo_ajax_login_url)
 
         weibo_auth.cookies = self.cookies
         self.weibo_auth = weibo_auth
 
-    # async def push_image(self, image_base64):
-    #     self.push_image
+        return is_login
 
-    async def create_post(self, message):
-        await self.create_new_post(message)
+    async def create_post(self, message, photo_id=None):
+        if photo_id is None:
+            photo_id = ''
+        await self.create_new_post(message, photo_id)
+
+    async def get_id_and_push_image(self, image_raw, nick):
+        req = await self.push_image(image_raw, nick)
+        return req.request_info.url.query.get('pid')
