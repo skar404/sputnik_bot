@@ -5,6 +5,7 @@ services:
     restart: always
     expose:
       - "8080"
+    command: python manage.py api
 
   nginx:
     image: umputun/nginx-le:latest
