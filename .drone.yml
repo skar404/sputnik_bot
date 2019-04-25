@@ -14,8 +14,10 @@ pipeline:
 
   deploy:
     image: appleboy/drone-ssh
+    host: sputnik.bot.assa.dev
+    username: devusers
     port: 22
-    secrets: [ssh_key, username, host]
+    secrets: [ssh_key]
     script:
       - ls
       - cd /srv/sputnik_bot
