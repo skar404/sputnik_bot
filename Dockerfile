@@ -1,8 +1,8 @@
-FROM python:3.7-alpine
+FROM python:3.7
 
-RUN \
-    apk --no-cache add --update gcc python3-dev build-base && \
-    rm -rf /var/cache/apk/*
+#RUN \
+#    apk --no-cache add --update gcc python3-dev build-base && \
+#    rm -rf /var/cache/apk/*
 
 WORKDIR /app
 
