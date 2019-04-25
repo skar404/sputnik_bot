@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, sql, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, sql, Boolean, false
 
 from sputnik.models.main import DataBase
 
@@ -26,4 +26,5 @@ class PostModel(DataBase.Model):
 
     created_at = Column(DateTime, server_default=sql.text('now()'), index=True, default=datetime.datetime.utcnow)
 
-    is_posted = Column(Boolean, default=False, index=True)
+    status_posted = Column(Boolean, default=False, index=True)
+    status_send_tg = Column(Boolean, server_default=false(), index=True, nullable=False)

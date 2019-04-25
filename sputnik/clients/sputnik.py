@@ -49,6 +49,10 @@ class SputnikService(SputnikClint):
         guid = item.findtext('guid')
         post_id = [i for i in guid.split('/') if i][-1]
 
+        description = item.findtext('description')
+        if '俄罗斯卫星通讯社' in description:
+            description = ''.join(description.split('电')[1:]).strip()
+
         return Post(
             post_id=post_id,
 
@@ -56,7 +60,7 @@ class SputnikService(SputnikClint):
             link=item.findtext('link'),
             guid=guid,
             pub_date=datetime.strptime(item.findtext('pubDate'), '%a, %d %b %Y %X %z').replace(tzinfo=None),
-            description=item.findtext('description'),
+            description=description,
             category=item.findtext('category'),
             enclosure=enclosure.attrib.get('url') if enclosure is not None else None,
 

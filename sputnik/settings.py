@@ -1,4 +1,3 @@
-import base64
 import os
 
 from envparse import env
@@ -9,6 +8,8 @@ env.read_envfile(os.path.join(BASE_DIR, '.env'))
 
 
 # Setting Gunicorn App
+ENVIRONMENT: str = env.str('ENVIRONMENT', default='dev')
+
 WORKERS: int = env.int('WORKERS', default=1)
 
 TIME_OUT: int = env.int('TIME_OUT', default=300)
@@ -27,11 +28,21 @@ WEIBO_APP_HOST: str = env.str('WEIBO_APP_HOST', default=None)
 WEIBO_LOGIN: str = env.str('WEIBO_LOGIN')
 WEIBO_PASSWORD: str = env.str('WEIBO_PASSWORD')
 
+WEIBO_TEST_LOGIN: str = env.str('WEIBO_LOGIN')
+WEIBO_TEST_PASSWORD: str = env.str('WEIBO_PASSWORD')
+
 DB_DSN: str = env.str('DB_DSN', default='postgres://postgres:postgres@127.0.0.1:5400/postgres')
 
 POST_USER: List[str] = env.list('POST_USER', default=[])
 ADMIN_USER: List[str] = env.list('ADMIN_USER', default=[])
+WHITE_LIST_USER: List[str] = env.list('WHITE_LIST_USER', default=[])
 
 JWT_SECRET = env.str('JWT_SECRET', default='')
 
 ANTI_CAPTCHA_KEY = env.str('ANTI_CAPTCHA_KEY', default='')
+
+UPDATE_POST_SECONDS = env.int('UPDATE_POST_SECONDS', default=10)
+SEND_POST_SECONDS = env.int('SEND_POST_SECONDS', default=10)
+
+WEIBO_HOST_URL = env.str('WEIBO_HOST_URL')
+WEIBO_NICK = env.str('WEIBO_NICK')

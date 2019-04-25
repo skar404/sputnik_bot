@@ -33,13 +33,15 @@ def sandbox():
         from sputnik.settings import WEIBO_LOGIN, WEIBO_PASSWORD
         from sputnik.clients.weibo_parser import WeiboParserService
 
+        cookies = None
+
         async with WeiboParserService() as weibo_service:
             await weibo_service.login_user(WEIBO_LOGIN, WEIBO_PASSWORD)
-
-            with open('test_data/kate.jpg', 'rb') as f:
-                photo_bit = base64.b64encode(f.read())
-            photo_id = await weibo_service.get_id_and_push_image(photo_bit, 'test')
-            await weibo_service.create_post('is work : )', photo_id)
+            breakpoint()
+            # with open('test_data/kate.jpg', 'rb') as f:
+            #     photo_bit = base64.b64encode(f.read())
+            # photo_id = await weibo_service.get_id_and_push_image(photo_bit, 'test')
+            # await weibo_service.create_post('is work : )', photo_id)
 
     import asyncio
     asyncio.run(run())

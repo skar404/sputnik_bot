@@ -4,29 +4,17 @@ from sputnik.models.post import PostModel
 from sputnik.settings import POST_USER
 
 
-async def send_message(post):
-    for user_id in POST_USER:
-        if post.short_link is None:
-            return
-        await TelegramSDK().send_message(chat_id=user_id, message=f'**Запостить новость:**\n\n{post.enclosure}')
-        await TelegramSDK().send_message(
-            chat_id=user_id,
-            message=f'【{post.title}】\n{post.description}\n{post.short_link}',
-            eply_markup={
-                'inline_keyboard': [[
-                    {"text": "Запостить", "callback_data": f'post_message:id:{post.id}'},
-                ]]
-            }
-        )
-
-
 async def update_post(app):
-    post_list = await SputnikService().get_post(with_link=False)
+    post_list = await SputnikService().get_post(with_link=True)
 
     for post in post_list:
         post_req: PostModel = await PostModel.query.where(PostModel.guid == post.guid).gino.first()
 
         if post_req is None:
+            if post.short_link is None:
+                short_link = await SputnikService().get_short_link(post.post_id[8:])
+                await post_req.update(short_link=short_link).apply()
+
             await PostModel.create(
                 guid=post.guid,
 
@@ -40,6 +28,3 @@ async def update_post(app):
                 text=post.text,
                 title=post.title,
             )
-
-        if post_req is not None:
-            await send_message(post_req)

@@ -188,7 +188,7 @@ class WeiboParserClient(BaseClient):
             'markpos': '1',
             'logo': '1',
             # копирайт который будет воткнут на фото
-            'nick': '@用户{}'.format(nick),
+            'nick': '@{}'.format(nick),
             'marks': '0',
             'app': 'miniblog',
             's': 'rdxt',
