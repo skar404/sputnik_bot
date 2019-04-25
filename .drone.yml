@@ -2,6 +2,7 @@ pipeline:
   build:
     image: plugins/docker
     repo: cr.yandex/crpd14ddd46b4ne9he38/sputnik-bot:latest
+    registry: cr.yandex
     secrets: [docker_username, docker_password]
     build_args:
       - DRONE=${DRONE}
