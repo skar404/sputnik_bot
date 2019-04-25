@@ -5,12 +5,68 @@ services:
     restart: always
     expose:
       - "8080"
+    env_file:
+      - .env
+    environment:
+      - ENVIRONMENT
+      - WORKERS
+      - TIME_OUT
+      - BOT_TOKEN
+      - BOT_SECRET_URL
+      - BOT_WEB_HOOK
+      - RSS_FEED
+      - SHORT_LINK
+      - WEIBO_APP_KEY
+      - WEIBO_APP_SECRET
+      - WEIBO_APP_HOST
+      - WEIBO_LOGIN
+      - WEIBO_PASSWORD
+      - WEIBO_TEST_LOGIN
+      - WEIBO_TEST_PASSWORD
+      - DB_DSN
+      - POST_USER
+      - ADMIN_USER
+      - WHITE_LIST_USER
+      - JWT_SECRET
+      - ANTI_CAPTCHA_KEY
+      - UPDATE_POST_SECONDS
+      - SEND_POST_SECONDS
+      - WEIBO_HOST_URL
+      - WEIBO_NICK
     command: python manage.py api
   scheduler:
     image: cr.yandex/crpd14ddd46b4ne9he38/sputnik-bot:latest
     restart: always
     expose:
-      - "8080"
+      - "8081"
+    environment:
+      - ENVIRONMENT
+      - WORKERS
+      - TIME_OUT
+      - BOT_TOKEN
+      - BOT_SECRET_URL
+      - BOT_WEB_HOOK
+      - RSS_FEED
+      - SHORT_LINK
+      - WEIBO_APP_KEY
+      - WEIBO_APP_SECRET
+      - WEIBO_APP_HOST
+      - WEIBO_LOGIN
+      - WEIBO_PASSWORD
+      - WEIBO_TEST_LOGIN
+      - WEIBO_TEST_PASSWORD
+      - DB_DSN
+      - POST_USER
+      - ADMIN_USER
+      - WHITE_LIST_USER
+      - JWT_SECRET
+      - ANTI_CAPTCHA_KEY
+      - UPDATE_POST_SECONDS
+      - SEND_POST_SECONDS
+      - WEIBO_HOST_URL
+      - WEIBO_NICK
+    env_file:
+      - .env
     command: python manage.py schedule
   nginx:
     image: cr.yandex/crpd14ddd46b4ne9he38/umputun-nginx-le:latest
