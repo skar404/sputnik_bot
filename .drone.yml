@@ -1,16 +1,16 @@
 pipeline:
-#  build:
-#    image: plugins/docker
-#    repo: username502/sputnik_bot
-#    secrets: [docker_username, docker_password]
-#    build_args:
-#      - DRONE=${DRONE}
-#      - DRONE_TAG=${DRONE_TAG}
-#      - DRONE_COMMIT=${DRONE_COMMIT}
-#      - DRONE_BRANCH=${DRONE_BRANCH}
-#    when:
-#      branch: master
-#      event: push
+  build:
+    image: plugins/docker
+    repo: cr.yandex/crpd14ddd46b4ne9he38/sputnik-bot:latest
+    secrets: [docker_username, docker_password]
+    build_args:
+      - DRONE=${DRONE}
+      - DRONE_TAG=${DRONE_TAG}
+      - DRONE_COMMIT=${DRONE_COMMIT}
+      - DRONE_BRANCH=${DRONE_BRANCH}
+    when:
+      branch: master
+      event: push
 
   deploy:
     image: appleboy/drone-ssh
@@ -22,7 +22,7 @@ pipeline:
       - ls
       - cd ~/sputnik_bot/
       - git pull --rebase --no-autostash
-#      - docker-compose pull
+      - docker-compose pull
 #      - docker-compose up -d
     when:
       branch: master

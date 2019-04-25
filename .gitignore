@@ -5,4 +5,4 @@ __pycache__/
 *.env
 
 .pytest_cache/
-.postgresql.pem
+#.postgresql.pem
