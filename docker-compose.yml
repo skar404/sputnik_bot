@@ -1,14 +1,19 @@
 version: '3'
 services:
   bot:
-    image: username502/sputnik_bot:latest
+    image: cr.yandex/crpd14ddd46b4ne9he38/sputnik-bot:latest
     restart: always
     expose:
       - "8080"
     command: python manage.py api
-
+  scheduler:
+    image: cr.yandex/crpd14ddd46b4ne9he38/sputnik-bot:latest
+    restart: always
+    expose:
+      - "8080"
+    command: python manage.py schedule
   nginx:
-    image: umputun/nginx-le:latest
+    image: cr.yandex/crpd14ddd46b4ne9he38/umputun-nginx-le:latest
     restart: always
     volumes:
       - /srv/docker/ssl:/etc/nginx/ssl
