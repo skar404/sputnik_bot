@@ -81,6 +81,6 @@ services:
       - TZ=GMT
       - LETSENCRYPT=true
       - LE_EMAIL=skar404@gamil.com
-      - LE_FQDN=bot.guser.ru
+      - LE_FQDN=sputnik.bot.assa.dev
     depends_on:
       - bot
