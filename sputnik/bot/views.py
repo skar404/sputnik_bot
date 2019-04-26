@@ -12,6 +12,7 @@ from sputnik.models.main import DataBase
 from sputnik.models.post import PostModel
 from sputnik.settings import BOT_TOKEN
 from sputnik.shortcuts.main import users_info, white_list
+from sputnik.utils.text import get_post_text
 
 bot_handler = TelegramRouter(bot_token=BOT_TOKEN)
 
@@ -66,6 +67,7 @@ async def send_message_weibo(chat_id, message_id, post_id):
     post: PostModel = await PostModel.query.where(PostModel.id == post_id).gino.first()
     if post.enclosure[-3:] != 'jpg':
         # TODO сказать что это не картинка и не получаться обновить
+        # TODO убрать на уровне отправеки в tg
         return
 
     if post.status_posted is True:
@@ -75,9 +77,7 @@ async def send_message_weibo(chat_id, message_id, post_id):
 
     image = await download_img(post.enclosure)
 
-    text = f"【{post.title}】\n" \
-        f"{post.description}\n" \
-        f"{post.short_link}"
+    text = get_post_text(post)
 
     async with WeiboParserService() as weibo_service:
         await weibo_service.login_user(settings.WEIBO_LOGIN, settings.WEIBO_PASSWORD)

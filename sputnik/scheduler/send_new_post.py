@@ -1,10 +1,10 @@
-from sqlalchemy import true
 from typing import List
 
 from sputnik.clients.sputnik import SputnikService
 from sputnik.clients.telegram.client import TelegramSDK
 from sputnik.models.post import PostModel
 from sputnik.settings import POST_USER
+from sputnik.utils.text import get_post_text
 
 
 async def send_message(post: PostModel):
@@ -13,10 +13,11 @@ async def send_message(post: PostModel):
             short_link = await SputnikService().get_short_link(post.post_id[8:])
             await post.update(short_link=short_link).apply()
 
+        text = get_post_text(post)
         await TelegramSDK().send_message(chat_id=user_id, message=f'**Запостить новость:**\n\n{post.enclosure}')
         await TelegramSDK().send_message(
             chat_id=user_id,
-            message=f'【{post.title}】\n{post.description}\n{post.short_link}',
+            message=text,
             reply_markup={
                 'inline_keyboard': [[
                     {"text": "Запостить", "callback_data": f'post_message:id:{post.id}'},
