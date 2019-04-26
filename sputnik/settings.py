@@ -16,7 +16,7 @@ TIME_OUT: int = env.int('TIME_OUT', default=300)
 
 BOT_TOKEN: str = env.str('BOT_TOKEN', default=None)
 BOT_SECRET_URL: str = env.str('BOT_SECRET_URL', default='bot')
-BOT_WEB_HOOK: str = env.str('BOT_WEB_HOOK', default=None)
+BOT_WEB_HOOK: str = env.str('BOT_WEB_HOOK', default=None) + BOT_SECRET_URL
 
 RSS_FEED: str = env.str('RSS_FEED', default=None)
 SHORT_LINK: str = env.str('SHORT_LINK', default=None)

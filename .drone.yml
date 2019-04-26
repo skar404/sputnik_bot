@@ -17,6 +17,7 @@ pipeline:
     host: sputnik.bot.assa.dev
     username: devusers
     port: 22
+    command_timeout: 2m
     secrets: [ssh_key]
     script:
       - cd ~/sputnik_bot/
