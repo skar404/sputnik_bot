@@ -1,7 +1,7 @@
 version: '3'
 services:
   bot:
-    image: cr.yandex/crpd14ddd46b4ne9he38/sputnik-bot:latest
+    image: username502/sputnik_bot:latest
     restart: always
     expose:
       - "8080"
@@ -35,7 +35,7 @@ services:
       - WEIBO_NICK
     command: python manage.py api
   scheduler:
-    image: cr.yandex/crpd14ddd46b4ne9he38/sputnik-bot:latest
+    image: username502/sputnik_bot:latest
     restart: always
     expose:
       - "8081"
@@ -69,7 +69,7 @@ services:
       - .env
     command: python manage.py schedule
   nginx:
-    image: cr.yandex/crpd14ddd46b4ne9he38/umputun-nginx-le:latest
+    image: umputun/nginx-le:latest
     restart: always
     volumes:
       - /srv/docker/ssl:/etc/nginx/ssl
