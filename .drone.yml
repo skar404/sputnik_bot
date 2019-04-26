@@ -21,8 +21,8 @@ pipeline:
     script:
       - cd ~/sputnik_bot/
       - git pull --rebase --no-autostash
-#      - docker-compose pull
-#      - docker-compose up -d
+      - docker-compose pull
+      - docker-compose up -d
     when:
       branch: master
       event: push
