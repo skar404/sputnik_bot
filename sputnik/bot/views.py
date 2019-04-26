@@ -56,7 +56,7 @@ async def command_help(message, _request):
         f'Время между отправкой постов в TG: {settings.SEND_POST_SECONDS}\n' \
            '# todo: добавить описания для /help этот метод вынести в /ping или /status'
 
-    await TelegramSDK() \
+    req = await TelegramSDK() \
         .send_message(chat_id=message['message']['chat']['id'], message=text)
 
 
@@ -71,7 +71,7 @@ async def send_message_weibo(chat_id, message_id, post_id):
     if post.status_posted is True:
         return
 
-    # await post_req.update(status_posted=True).apply()
+    await post.update(status_posted=True).apply()
 
     image = await download_img(post.enclosure)
 

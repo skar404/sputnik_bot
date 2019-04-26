@@ -46,3 +46,5 @@ SEND_POST_SECONDS = env.int('SEND_POST_SECONDS', default=10)
 
 WEIBO_HOST_URL = env.str('WEIBO_HOST_URL')
 WEIBO_NICK = env.str('WEIBO_NICK')
+
+TG_PROXY_URL = env.str('TG_PROXY_URL', default=None)

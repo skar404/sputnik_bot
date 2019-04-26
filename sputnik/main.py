@@ -43,5 +43,5 @@ async def init_app(api=False, schedule=False):
     return app
 
 
-def run_app(api=False, schedule=False):
-    web.run_app(init_app(api, schedule))
+def run_app(port, api=False, schedule=False,):
+    web.run_app(init_app(api, schedule), port=port)

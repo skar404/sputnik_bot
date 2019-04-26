@@ -1,5 +1,5 @@
 from sputnik.clients.base import BaseClient
-from sputnik.settings import BOT_TOKEN, BOT_WEB_HOOK
+from sputnik.settings import BOT_TOKEN, BOT_WEB_HOOK, TG_PROXY_URL
 
 
 class ParseMode:
@@ -11,6 +11,8 @@ class TelegramClient(BaseClient):
     BASE_URL = 'https://api.telegram.org/bot{bot_token}/'.format(bot_token=BOT_TOKEN)
 
     VERIFY_SSL = False
+
+    PROXY_URL = TG_PROXY_URL
 
     set_web_hook_url = 'setWebhook?url={url_web_hook}'
     send_message_url = 'sendMessage'

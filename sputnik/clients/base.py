@@ -24,6 +24,8 @@ class BaseClient:
     BASE_URL: str = None
     VERIFY_SSL: bool = True
 
+    PROXY_URL: str = None
+
     def _get_url(self, url_name: str, **kwargs):
         return self.BASE_URL + getattr(self, url_name).format(**kwargs)
 
@@ -35,6 +37,9 @@ class BaseClient:
 
     async def _request(self, *args, **kwargs) -> RequestData:
         req = RequestData()
+
+        if self.PROXY_URL is not None:
+            kwargs['proxy'] = self.PROXY_URL
 
         with async_timeout.timeout(self.TIMEOUT):
             async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=self.VERIFY_SSL)) as session:
