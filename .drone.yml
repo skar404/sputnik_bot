@@ -28,3 +28,12 @@ pipeline:
     when:
       branch: master
       event: push
+
+  sentry:
+    image: urbint/drone-sentry
+    sentry_release_version: ${DRONE_COMMIT}
+    sentry_release_environment: prod
+    secrets: [sentry_auth_token, sentry_organization, sentry_project]
+    when:
+      branch: master
+      event: push
