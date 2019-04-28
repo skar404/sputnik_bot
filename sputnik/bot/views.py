@@ -135,6 +135,16 @@ async def callback_send_post(message, _request):
 @users_info
 @white_list
 async def statistics(message, _request):
+    day_to_week = [
+        'понедельник',
+        'вторник',
+        'среда',
+        'четверг',
+        'пятница',
+        'суббота',
+        'воскресенье'
+    ]
+
     chat_id = message['user_info']['id']
 
     create_post_count_list = await DataBase.all("""select date_trunc('day', created_at) AS "day" , count(*)
@@ -142,6 +152,7 @@ from post
 WHERE created_at > now() - interval '7 days'
 GROUP BY 1
 order by 1 DESC;""")
+
     send_weibo_count_list = await DataBase.all("""select date_trunc('day', created_at) AS "day" , min(created_at), 
     max(created_at), count(*)
 from post
@@ -150,21 +161,28 @@ WHERE created_at > now() - interval '7 days' and
 GROUP BY 1
 order by 1 DESC;""")
 
-    create_post_count_text = '\n'.join([f'{i.day.strftime("%d-%m")} - {i.count}' for i in create_post_count_list])
-    send_weibo_count_text = '\n'.join([f'{i.day.strftime("%d-%m")} - {i.count}' for i in send_weibo_count_list])
+    create_post_count_text = '\n'.join([f'{i.day.strftime("%d.%m")} - {i.count}' for i in create_post_count_list])
+    send_weibo_count_text = '\n'.join([f'{i.day.strftime("%d.%m")} - {i.count}' for i in send_weibo_count_list])
 
-    schedule_work = '\n'.join([f'{i.day.strftime("%d-%m")} c {i.min.strftime("%H:%M")} до {i.max.strftime("%H:%M")}'
+    schedule_work = '\n'.join([f'{i.day.strftime("%d.%m")} [{day_to_week[i.day.weekday()]}] c {i.min.strftime("%H:%M")} до {i.max.strftime("%H:%M")}'
                                for i in send_weibo_count_list])
+
+    message = 'Статистика за неделю в формате (дата, количество)\n\n'
+    if send_weibo_count_text:
+        message += 'Постов было отправленно в weibo: ```\n' \
+                    f'{send_weibo_count_text} ```\n\n'
+
+    if create_post_count_text:
+        message += 'Постов было записано в базу: ```\n' \
+                    f'{create_post_count_text} ```\n\n'
+
+    if schedule_work:
+        message += 'Примерный рафик рабоыт: ```\n' \
+                    f'{schedule_work} ```'
 
     await TelegramSDK().send_message(
         chat_id=chat_id,
-        message=f'Статистика за неделю в формате (дата, количество)\n\n'
-        f'Постов было отправленно в weibo: ```\n'
-        f'{send_weibo_count_text} ```\n\n'
-        f'Постов было записано в базу: ```\n'
-        f'{create_post_count_text} ```\n\n'
-        f'Примерный рафик рабоыт: ```\n'
-        f'{schedule_work} ```'
+        message=message
     )
 
 
