@@ -160,9 +160,9 @@ order by 1 DESC;""")
         chat_id=chat_id,
         message=f'Статистика за неделю в формате (дата, количество)\n\n'
         f'Постов было отправленно в weibo: ```\n'
-        f'{send_weibo_count_text} ```\n'
+        f'{send_weibo_count_text} ```\n\n'
         f'Постов было записано в базу: ```\n'
-        f'{create_post_count_text} ```\n'
+        f'{create_post_count_text} ```\n\n'
         f'Примерный рафик рабоыт: ```\n'
         f'{schedule_work} ```'
     )
