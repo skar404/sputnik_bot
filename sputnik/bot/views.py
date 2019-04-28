@@ -129,9 +129,6 @@ async def callback_send_post(message, _request):
 @users_info
 @white_list
 async def test_message(message, _request):
-    with open('./test_data/kate.jpg', 'rb') as f:
-        data = base64.b64encode(f.read()).decode()
-
     chat_id = message['user_info']['id']
 
     message_text = message['message']['text']
@@ -139,9 +136,4 @@ async def test_message(message, _request):
 
     # todo нужно изучить способ расопзнания текста
     if 'спасиб' in message_text:
-        # await TelegramSDK().send_photo(chat_id=chat_id, message="""【一只猫赶走了六条狗】在土耳其，一只猫击退了由六条狗组成的狗群，保卫了自己的领地。《每日邮报》注意到了相关视频。http://sptnkne.ws/mq9J""",
-        #                                reply_to_message_id=message_id,
-        #                                photo='http://cdn3.img.sputniknews.cn/images/102683/74/1026837458.jpg',
-        #                                reply_markup=reply_markup
-        #                                )
         await TelegramSDK().send_message(chat_id=chat_id, message=get_thank_message(), reply_to_message_id=message_id)
