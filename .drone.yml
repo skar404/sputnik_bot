@@ -24,6 +24,7 @@ pipeline:
       - git pull --rebase --no-autostash
       - docker-compose pull
       - docker-compose up -d
+      - docker system prune --all --force
     when:
       branch: master
       event: push
