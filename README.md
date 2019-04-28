@@ -1,4 +1,5 @@
 # sputnik_bot
+[![Build Status](https://cloud.drone.io/api/badges/skar404/sputnik_bot/status.svg)](https://cloud.drone.io/skar404/sputnik_bot)
 
 Auto post new to weibo and telegram 
 
