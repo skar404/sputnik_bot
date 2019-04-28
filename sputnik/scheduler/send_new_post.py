@@ -21,6 +21,7 @@ async def send_message(post: PostModel):
             'reply_markup': {
                 'inline_keyboard': [[
                     {"text": f"к новости", "url": post.guid},
+                ], [
                     {"text": "Запостить", "callback_data": f'post_message:id:{post.id}'},
                 ]]
             }

@@ -46,7 +46,6 @@ async def init_app(api=False, schedule=False):
     if schedule is True:
         scheduler = init_jobs(app)
         scheduler.start()
-
     return app
 
 
