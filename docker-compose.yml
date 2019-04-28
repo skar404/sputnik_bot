@@ -31,7 +31,7 @@ services:
       - WEIBO_HOST_URL
       - WEIBO_NICK
       - DRONE_COMMIT
-      command: alembic upgrade heads
+    command: alembic upgrade heads
   bot:
     image: username502/sputnik_bot:latest
     restart: always
