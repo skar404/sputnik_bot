@@ -20,11 +20,10 @@ pipeline:
     command_timeout: 2m
     secrets: [ssh_key]
     script:
-      - ls
-#      - cd ~/sputnik_bot/
-#      - git pull --rebase --no-autostash
-#      - docker-compose pull
-#      - docker-compose up -d
+      - cd ~/sputnik_bot/
+      - git pull --rebase --no-autostash
+      - docker-compose pull
+      - docker-compose up -d
     when:
       branch: master
       event: push
