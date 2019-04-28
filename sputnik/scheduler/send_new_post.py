@@ -13,7 +13,8 @@ async def send_message(post: PostModel):
             short_link = await SputnikService().get_short_link(post.post_id[8:])
             await post.update(short_link=short_link).apply()
 
-        text = get_post_text(post)
+        # replace is mix markdown
+        text = get_post_text(post).replace("_", "\\_").replace("*", "\\*").replace("[", "\\[").replace("`", "\\`")
 
         kwarg = {
             'chat_id': user_id,
@@ -40,7 +41,8 @@ async def send_message(post: PostModel):
                 f'id поста в базе: `{post.id}`\n'
                 f'ответ telegram:\n'
                 f'```\n{req.json}```,\n'
-                f'**наши специалисты уже работают над проблемой**'
+                f'**наши специалисты уже работают над проблемой**\n'
+                f'#error #send\\_message #post #post\\_{post.id}'
             )
 
         await post.update(status_send_tg=True).apply()
