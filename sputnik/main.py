@@ -1,8 +1,10 @@
 import logging
 import ssl
 
+import sentry_sdk
 from aiohttp import web
 from asyncpg.pool import Pool
+from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
 from sputnik import settings
 from sputnik.clients.weibo_parser import WeiboAuthData
@@ -25,6 +27,11 @@ async def init_telegram():
 
 
 async def init_app(api=False, schedule=False):
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        integrations=[AioHttpIntegration()]
+    )
+
     app = WebApp()
 
     ctx = ssl.create_default_context(capath='./.postgresql.pem')
