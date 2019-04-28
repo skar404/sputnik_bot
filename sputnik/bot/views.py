@@ -1,10 +1,8 @@
 import asyncio
-import base64
 import logging
 import time
 
 from sputnik import settings
-from sputnik.clients.base import BaseClient
 from sputnik.clients.file_download import download_img
 from sputnik.clients.telegram.client import TelegramSDK
 from sputnik.bot.router import TelegramRouter
@@ -38,6 +36,16 @@ async def command_start(message, _request):
         .send_message(chat_id=message['message']['chat']['id'], message=text)
 
 
+@bot_handler.command(command='ping')
+@users_info
+@white_list
+async def ping(message, _request):
+    chat_id = message['user_info']['id']
+    message_id = message['message']['message_id']
+    await DataBase.scalar('SELECT 1;')
+    await TelegramSDK().send_message(chat_id=chat_id, message='pong', reply_to_message_id=message_id)
+
+
 @bot_handler.command(command='help')
 @users_info
 @white_list
@@ -55,11 +63,9 @@ async def command_help(message, _request):
         f'Ссылка на бота: {settings.BOT_WEB_HOOK}\n' \
         f'Проверка подключения в базе данных: {is_connect_db}\n' \
         f'Время между обновлениями постов: {settings.UPDATE_POST_SECONDS}\n' \
-        f'Время между отправкой постов в TG: {settings.SEND_POST_SECONDS}\n' \
-           '# todo: добавить описания для /help этот метод вынести в /ping или /status'
+        f'Время между отправкой постов в TG: {settings.SEND_POST_SECONDS}'
 
-    req = await TelegramSDK() \
-        .send_message(chat_id=message['message']['chat']['id'], message=text)
+    await TelegramSDK().send_message(chat_id=message['message']['chat']['id'], message=text)
 
 
 async def send_message_weibo(chat_id, message_id, post_id):
@@ -123,6 +129,43 @@ async def callback_send_post(message, _request):
     await TelegramSDK().edit_only_message_reply(chat_id, message_id, reply_markup=reply_markup)
 
     asyncio.ensure_future(send_message_weibo(chat_id, message_id, post_id))
+
+
+@bot_handler.command(command='statistics')
+@users_info
+@white_list
+async def statistics(message, _request):
+    chat_id = message['user_info']['id']
+
+    create_post_count_list = await DataBase.all("""select date_trunc('day', created_at) AS "day" , count(*)
+from post
+WHERE created_at > now() - interval '7 days'
+GROUP BY 1
+order by 1 DESC;""")
+    send_weibo_count_list = await DataBase.all("""select date_trunc('day', created_at) AS "day" , min(created_at), 
+    max(created_at), count(*)
+from post
+WHERE created_at > now() - interval '7 days' and
+      status_posted is TRUE
+GROUP BY 1
+order by 1 DESC;""")
+
+    create_post_count_text = '\n'.join([f'{i.day.strftime("%d-%m")} - {i.count}' for i in create_post_count_list])
+    send_weibo_count_text = '\n'.join([f'{i.day.strftime("%d-%m")} - {i.count}' for i in send_weibo_count_list])
+
+    schedule_work = '\n'.join([f'{i.day.strftime("%d-%m")} c {i.min.strftime("%H:%M")} до {i.max.strftime("%H:%M")}'
+                               for i in send_weibo_count_list])
+
+    await TelegramSDK().send_message(
+        chat_id=chat_id,
+        message=f'Статистика за неделю в формате (дата, количество)\n\n'
+        f'Постов было отправленно в weibo: ```\n'
+        f'{send_weibo_count_text} ```\n'
+        f'Постов было записано в базу: ```\n'
+        f'{create_post_count_text} ```\n'
+        f'Примерный рафик рабоыт: ```\n'
+        f'{schedule_work} ```'
+    )
 
 
 @bot_handler.text()

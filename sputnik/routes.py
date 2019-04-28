@@ -7,4 +7,4 @@ def setup_routes(app):
     bot_handler.register()
 
     app.router.add_post('/bot{}'.format(BOT_SECRET_URL), bot, name='bot')
-    app.router.add_get('/', ping, name='ping')
+    app.router.add_get('/ping', ping, name='ping')
