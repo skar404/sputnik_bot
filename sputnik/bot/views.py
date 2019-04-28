@@ -95,7 +95,7 @@ async def send_message_weibo(chat_id, message_id, post_id):
         'inline_keyboard': [[
             {"text": "Сообщений успешно отправленно в weibo", "url": settings.WEIBO_HOST_URL},
         ], [
-            {"text": "Тест, отправит, повторно отправит", "callback_data": f'post_message:id:{post_id}'},
+            {"text": "повторно отправит", "callback_data": f'post_message:id:{post_id}'},
         ]]
     }
 
@@ -122,7 +122,7 @@ async def callback_send_post(message, _request):
         'inline_keyboard': [[
             {"text": "Сообщений скоро будет отправленно в weibo", "url": settings.WEIBO_HOST_URL},
         ], [
-            {"text": "Тест, отправит, повторно отправит", "callback_data": f'post_message:id:{post_id}'},
+            {"text": "повторно отправит", "callback_data": f'post_message:id:{post_id}'},
         ]]
     }
 
