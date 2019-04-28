@@ -14,16 +14,33 @@ async def send_message(post: PostModel):
             await post.update(short_link=short_link).apply()
 
         text = get_post_text(post)
-        await TelegramSDK().send_message(chat_id=user_id, message=f'**Запостить новость:**\n\n{post.enclosure}')
-        await TelegramSDK().send_message(
-            chat_id=user_id,
-            message=text,
-            reply_markup={
+
+        kwarg = {
+            'chat_id': user_id,
+            'message': f'**Запостить новость:**\n{text}',
+            'reply_markup': {
                 'inline_keyboard': [[
                     {"text": "Запостить", "callback_data": f'post_message:id:{post.id}'},
                 ]]
             }
-        )
+        }
+
+        method_send = TelegramSDK().send_message
+        if post.enclosure is not None and post.enclosure[-3:].lower() == 'jpg':
+            kwarg.update({'photo': post.enclosure })
+            method_send = TelegramSDK().send_photo
+
+        req = await method_send(**kwarg)
+        if req.code != 200:
+            await TelegramSDK().send_message(
+                chat_id=user_id,
+                message=f'Ошибка отправки новости в Telegram:\n'
+                f'id поста в базе: `{post.id}`\n'
+                f'ответ telegram:\n'
+                f'```\n{req.json}```,\n'
+                f'**наши специалисты уже работают над проблемой**'
+            )
+
         await post.update(status_send_tg=True).apply()
 
 

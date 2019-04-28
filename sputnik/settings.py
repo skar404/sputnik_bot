@@ -15,8 +15,9 @@ WORKERS: int = env.int('WORKERS', default=1)
 TIME_OUT: int = env.int('TIME_OUT', default=300)
 
 BOT_TOKEN: str = env.str('BOT_TOKEN', default=None)
-BOT_SECRET_URL: str = env.str('BOT_SECRET_URL', default='bot')
+BOT_SECRET_URL: str = env.str('BOT_SECRET_URL', default='')
 BOT_WEB_HOOK: str = env.str('BOT_WEB_HOOK', default=None) + BOT_SECRET_URL
+BOT_SECRET_CALLBACK: str = env.str('BOT_SECRET_CALLBACK', default='dev')
 
 RSS_FEED: str = env.str('RSS_FEED', default=None)
 SHORT_LINK: str = env.str('SHORT_LINK', default=None)

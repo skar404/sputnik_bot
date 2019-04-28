@@ -18,11 +18,34 @@ class TelegramClient(BaseClient):
     send_message_url = 'sendMessage'
     delete_message_url = 'deleteMessage'
     edit_message_url = 'editMessageText'
+    send_photo_url = 'sendPhoto'
     edit_message_reply_markup_url = 'editMessageReplyMarkup'
 
     async def update_web_hook(self):
         req = await self.post(url=self._get_url('set_web_hook_url', url_web_hook=BOT_WEB_HOOK))
 
+        return req
+
+    async def send_photo(self, chat_id: str, photo: str, message: str = None,
+                         parse_mode: ParseMode = ParseMode.MARKDOWN,
+                         reply_markup=None, reply_to_message_id=None):
+        params = {
+            'chat_id': chat_id,
+            'caption': message,
+            'parse_mode': parse_mode,
+            'photo': photo
+        }
+
+        if reply_markup is not None:
+            params.update({'reply_markup': reply_markup})
+
+        if reply_to_message_id is not None:
+            params.update({'reply_to_message_id': reply_to_message_id})
+
+        req = await self.post(
+            url=self._get_url('send_photo_url'),
+            json=params
+        )
         return req
 
     async def send_message(self, chat_id: str, message: str, parse_mode: ParseMode = ParseMode.MARKDOWN,

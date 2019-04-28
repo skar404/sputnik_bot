@@ -1,3 +1,5 @@
+import random
+
 from sputnik import settings
 from sputnik.models.user import UserModel
 
@@ -41,3 +43,23 @@ def white_list(func):
         return res
 
     return wrapper
+
+
+def get_thank_message():
+    message_list = [
+        'всегда рад помоч : )',
+        'не за что, это моя работа',
+        'мне не сложно',
+        'вам спасибо за новости',
+        '不客气',  # пожалуйста
+        '不客氣',  # пожалуйста (традиционка)
+        '没理由',  # не за что
+        'не за что',
+        '(стикер счастливого бота)',
+        'лама в красном шарфе',
+        'пожалуйста :)',
+        'рад помочь',
+        'без проблем',
+    ]
+    message = random.choice(message_list)
+    return message
