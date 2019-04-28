@@ -67,6 +67,8 @@ services:
       - WEIBO_NICK
       - DRONE_COMMIT
     command: python manage.py api
+    depends_on:
+      - alembic
   scheduler:
     image: username502/sputnik_bot:latest
     restart: always
@@ -102,6 +104,8 @@ services:
     env_file:
       - .env
     command: python manage.py schedule
+    depends_on:
+      - alembic
   nginx:
     image: umputun/nginx-le:latest
     restart: always
