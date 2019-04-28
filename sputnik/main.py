@@ -29,7 +29,9 @@ async def init_telegram():
 async def init_app(api=False, schedule=False):
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
-        integrations=[AioHttpIntegration()]
+        integrations=[AioHttpIntegration()],
+        environment=settings.ENVIRONMENT,
+
     )
 
     app = WebApp()

@@ -30,6 +30,7 @@ services:
       - SEND_POST_SECONDS
       - WEIBO_HOST_URL
       - WEIBO_NICK
+      - DRONE_COMMIT
       command: alembic upgrade heads
   bot:
     image: username502/sputnik_bot:latest
@@ -64,6 +65,7 @@ services:
       - SEND_POST_SECONDS
       - WEIBO_HOST_URL
       - WEIBO_NICK
+      - DRONE_COMMIT
     command: python manage.py api
   scheduler:
     image: username502/sputnik_bot:latest
@@ -96,6 +98,7 @@ services:
       - SEND_POST_SECONDS
       - WEIBO_HOST_URL
       - WEIBO_NICK
+      - DRONE_COMMIT
     env_file:
       - .env
     command: python manage.py schedule
