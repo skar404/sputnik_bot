@@ -51,3 +51,5 @@ WEIBO_NICK = env.str('WEIBO_NICK')
 TG_PROXY_URL = env.str('TG_PROXY_URL', default=None)
 
 SENTRY_DSN: str = env.str('SENTRY_DSN', default=None)
+
+DRONE_COMMIT: str = env.str('DRONE_COMMIT', default=None)

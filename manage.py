@@ -17,12 +17,12 @@ manager = Manager()
 
 @manager.command
 def api():
-    run_app(api=True, port=8080)
+    run_app(name='api', api=True, port=8080)
 
 
 @manager.command
 def schedule():
-    run_app(schedule=True, port=8081)
+    run_app(name='schedule', schedule=True, port=8081)
 
 
 @manager.command

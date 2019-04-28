@@ -26,12 +26,13 @@ async def init_telegram():
     logging.info('update telegram web hook url')
 
 
-async def init_app(api=False, schedule=False):
+async def init_app(name, api=False, schedule=False):
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
         integrations=[AioHttpIntegration()],
         environment=settings.ENVIRONMENT,
-
+        release=settings.DRONE_COMMIT,
+        server_name=name,
     )
 
     app = WebApp()
@@ -51,5 +52,5 @@ async def init_app(api=False, schedule=False):
     return app
 
 
-def run_app(port, api=False, schedule=False,):
-    web.run_app(init_app(api, schedule), port=port)
+def run_app(port, name, api=False, schedule=False,):
+    web.run_app(init_app(name, api, schedule), port=port)
