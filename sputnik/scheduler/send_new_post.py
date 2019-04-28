@@ -17,9 +17,10 @@ async def send_message(post: PostModel):
 
         kwarg = {
             'chat_id': user_id,
-            'message': f'**Запостить новость:**\n{text}',
+            'message': f'**Запостить новость:**\n{text} \n\nurl: {post.guid}',
             'reply_markup': {
                 'inline_keyboard': [[
+                    {"text": f"перейти к новости", "url": post.guid},
                     {"text": "Запостить", "callback_data": f'post_message:id:{post.id}'},
                 ]]
             }
