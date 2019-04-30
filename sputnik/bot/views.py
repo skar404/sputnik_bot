@@ -68,6 +68,13 @@ async def command_help(message, _request):
     await TelegramSDK().send_message(chat_id=message['message']['chat']['id'], message=text)
 
 
+async def post_to_weibo(text, image):
+    async with WeiboParserService() as weibo_service:
+        await weibo_service.login_user(settings.WEIBO_LOGIN, settings.WEIBO_PASSWORD)
+        photo_id = await weibo_service.get_id_and_push_image(image, settings.WEIBO_NICK)
+        await weibo_service.create_post(text, photo_id)
+
+
 async def send_message_weibo(chat_id, message_id, post_id):
     start_time = time.time()
 
@@ -86,11 +93,23 @@ async def send_message_weibo(chat_id, message_id, post_id):
 
     text = get_post_text(post)
 
-    async with WeiboParserService() as weibo_service:
-        await weibo_service.login_user(settings.WEIBO_LOGIN, settings.WEIBO_PASSWORD)
-        photo_id = await weibo_service.get_id_and_push_image(image, settings.WEIBO_NICK)
-        await weibo_service.create_post(text, photo_id)
+    # TODO хадкот чтобы в случаи падния повторно отпаравлять
+    is_err = True
+    for _ in range(3):
+        try:
+            await post_to_weibo(text, image)
+            is_err = False
+            break
+        except Exception as ex:
+            logging.exception('error send waibo')
 
+    if is_err:
+        logging.exception('error send post to weibo')
+        await post.update(status_posted=False).apply()
+        await TelegramSDK().send_message(chat_id, 'Мне не удалось отправить этот пост в weibo\n'
+                                                  'но можно попробовать еще раз хотя я пробовал это уже 3 раза',
+                                         reply_to_message_id=message_id)
+        return
     reply_markup = {
         'inline_keyboard': [[
             {"text": "Сообщений успешно отправленно в weibo", "url": settings.WEIBO_HOST_URL},
