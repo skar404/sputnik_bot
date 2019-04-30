@@ -5,7 +5,7 @@ from sputnik.settings import POST_USER
 
 
 async def update_post(app):
-    post_list = await SputnikService().get_post(with_link=True)
+    post_list = await SputnikService().get_post(with_link=False)
 
     for post in post_list:
         post_req: PostModel = await PostModel.query.where(PostModel.guid == post.guid).gino.first()
