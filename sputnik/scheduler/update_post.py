@@ -12,8 +12,7 @@ async def update_post(app):
 
         if post_req is None:
             if post.short_link is None:
-                short_link = await SputnikService().get_short_link(post.post_id[8:])
-                await post_req.update(short_link=short_link).apply()
+                post.short_link = await SputnikService().get_short_link(post.post_id[8:])
 
             await PostModel.create(
                 guid=post.guid,
