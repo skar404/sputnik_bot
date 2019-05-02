@@ -3,7 +3,7 @@ services:
   alembic:
     image: username502/sputnik_bot:latest
     env_file:
-      - none.env
+      - .env
     environment:
       - ENVIRONMENT
       - WORKERS
@@ -38,7 +38,7 @@ services:
     expose:
       - "8080"
     env_file:
-      - none.env
+      - .env
     environment:
       - ENVIRONMENT
       - WORKERS
@@ -102,7 +102,7 @@ services:
       - WEIBO_NICK
       - DRONE_COMMIT
     env_file:
-      - none.env
+      - .env
     command: python manage.py schedule
     depends_on:
       - alembic
