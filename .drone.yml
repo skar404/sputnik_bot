@@ -4,7 +4,7 @@ pipeline:
     commands:
       - pip install -r requirements.txt
       - pip install -r requirements-dev.txt
-      - pytest --cov=sputnik sputnik/
+      - pytest --cov=./
       - codecov
     secrets: [CODECOV_TOKEN]
 
