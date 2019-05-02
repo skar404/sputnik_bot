@@ -1,6 +1,9 @@
 from sputnik.main import *
-from sputnik.views import ping, bot
+
+from conftest import create_app
 
 
-def test_ping():
-    pass
+async def test_client(test_client):
+    client = await test_client(create_app)
+    resp = await client.get('/ping')
+    assert resp.status == 200
