@@ -1,3 +1,4 @@
 ignore:
   - "sputnik/migrations"
   - "manage.py"
+  - "conftest.py"
