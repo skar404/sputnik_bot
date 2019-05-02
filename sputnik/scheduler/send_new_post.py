@@ -14,11 +14,13 @@ async def send_message(post: PostModel):
             await post.update(short_link=short_link).apply()
 
         # replace is mix markdown
-        text = get_post_text(post).replace("_", "\\_").replace("*", "\\*").replace("[", "\\[").replace("`", "\\`")
+        weibo_text = get_post_text(post)
+        message = f'**Запостить новость:**\n{weibo_text} \n\nполная ссылка: {post.guid}' \
+            .replace("_", "\\_").replace("*", "\\*").replace("[", "\\[").replace("`", "\\`")
 
         kwarg = {
             'chat_id': user_id,
-            'message': f'**Запостить новость:**\n{text} \n\nполная ссылка: {post.guid}',
+            'message': message,
             'reply_markup': {
                 'inline_keyboard': [[
                     {"text": f"к новости", "url": post.guid},
