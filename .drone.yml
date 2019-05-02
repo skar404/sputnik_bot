@@ -40,10 +40,10 @@ pipeline:
       event: push
 
 services:
-- name: database
-  image: postgres:9-alpine
-  ports:
-  - 5432
-  environment:
-    POSTGRES_USER: postgres
-    POSTGRES_DB: test
+  database:
+    image: postgres:9-alpine
+    ports:
+    - 5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: test
