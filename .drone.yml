@@ -1,4 +1,10 @@
 pipeline:
+  test:
+    image: python
+    commands:
+      - pip install -r requirements.txt
+      - pytest
+
   build:
     image: plugins/docker
     repo: username502/sputnik_bot
