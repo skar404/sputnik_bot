@@ -4,7 +4,7 @@ from sputnik.clients.sputnik import SputnikService
 from sputnik.clients.telegram.client import TelegramSDK
 from sputnik.models.post import PostModel
 from sputnik.settings import POST_USER
-from sputnik.utils.text import get_post_text
+from sputnik.utils.text import get_post_text, markdown_shielding
 
 
 async def send_message(post: PostModel):
@@ -14,9 +14,10 @@ async def send_message(post: PostModel):
             await post.update(short_link=short_link).apply()
 
         # replace is mix markdown
-        weibo_text = get_post_text(post)
-        message = f'**Запостить новость:**\n{weibo_text} \n\nполная ссылка: {post.guid}' \
-            .replace("_", "\\_").replace("*", "\\*").replace("[", "\\[").replace("`", "\\`")
+        weibo_text = markdown_shielding(get_post_text(post))
+        message = '**Запостить новость:**\n{weibo_text} \n\nполная ссылка: {guid}'.format(
+            weibo_text=weibo_text, guid=markdown_shielding(post.guid)
+        )
 
         kwarg = {
             'chat_id': user_id,
@@ -32,7 +33,7 @@ async def send_message(post: PostModel):
 
         method_send = TelegramSDK().send_message
         if post.enclosure is not None and post.enclosure[-3:].lower() == 'jpg':
-            kwarg.update({'photo': post.enclosure })
+            kwarg.update({'photo': post.enclosure})
             method_send = TelegramSDK().send_photo
 
         req = await method_send(**kwarg)
