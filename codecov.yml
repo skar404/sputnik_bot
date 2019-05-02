@@ -1,2 +1,3 @@
 ignore:
   - "sputnik/migrations"
+  - "manage.py"
