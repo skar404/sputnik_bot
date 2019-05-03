@@ -45,7 +45,7 @@ def white_list(func):
     return wrapper
 
 
-def get_thank_message():
+def get_thank_message() -> str:
     message_list = [
         'всегда рад помоч : )',
         'не за что, это моя работа',

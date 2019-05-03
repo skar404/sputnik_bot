@@ -26,7 +26,7 @@ async def init_telegram():
     logging.info('update telegram web hook url')
 
 
-async def init_app(name, api=False, schedule=False):
+async def init_app(name, api=False, schedule=False, update_web_hook=True):
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
         integrations=[AioHttpIntegration()],
@@ -43,7 +43,8 @@ async def init_app(name, api=False, schedule=False):
     await DataBase.set_bind(settings.DB_DSN, ssl=ctx)
 
     if api is True:
-        await init_telegram()
+        if update_web_hook:
+            await init_telegram()
         setup_routes(app)
 
     if schedule is True:

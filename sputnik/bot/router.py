@@ -55,14 +55,15 @@ class TelegramRouter:
             request['uri'] = uri
             return await self.register_routers[uri].handler(message, request)
 
-    def register(self):
+    def register(self, ignore_uniq=True):
         for route in self.routes:
             uri = self.get_uri(message_type=route.message_type, key=route.key)
 
             if uri not in self.register_routers:
                 self.register_routers[uri] = route
             else:
-                raise TelegramRouterException('routes is not unique', uri)
+                if not ignore_uniq:
+                    raise TelegramRouterException('routes is not unique', uri)
 
     def register_route(self, message_type: MessageType.mro(), key=None):
         def decorator(fun):

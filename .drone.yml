@@ -1,4 +1,13 @@
 pipeline:
+  test:
+    image: python
+    commands:
+      - pip install -r requirements.txt
+      - pip install -r requirements-dev.txt
+      - pytest --cov=./
+      - codecov
+    secrets: [CODECOV_TOKEN]
+
   build:
     image: plugins/docker
     repo: username502/sputnik_bot
@@ -29,3 +38,13 @@ pipeline:
     when:
       branch: master
       event: push
+
+services:
+  database:
+    image: postgres:9-alpine
+    ports:
+    - 5400
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres

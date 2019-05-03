@@ -39,11 +39,9 @@ mccabe==0.6.1
 mode==3.0.8
 more-itertools==7.0.0
 multidict==4.5.2
-mypy-extensions==0.4.1
 outcome==1.0.0
 pamqp==2.1.0
 pluggy==0.9.0
-psycopg2==2.8.1
 py==1.8.0
 pyasn1==0.4.5
 pycares==2.4.0

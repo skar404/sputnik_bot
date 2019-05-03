@@ -1,4 +1,4 @@
-from aiohttp.web_response import json_response
+from aiohttp.web_response import json_response, Response
 
 
 class ReturnStatus:
@@ -6,7 +6,7 @@ class ReturnStatus:
     ERROR = 'ERROR'
 
 
-def success(message: str = None):
+def success(message: str = None) -> Response:
     res = {}
     if message is not None:
         res.update({'result': message})
@@ -17,15 +17,15 @@ def success(message: str = None):
     })
 
 
-def bad_request(message='bad request'):
+def bad_request(message='bad request', code=400) -> Response:
     return json_response({
         'status': ReturnStatus.ERROR,
         'error': message
-    }, status=400)
+    }, status=code)
 
 
-def marshmallow_errors(errors: dict):
+def marshmallow_errors(errors: dict, code=400) -> Response:
     return json_response({
         'status': ReturnStatus.ERROR,
         'errors': errors
-    }, status=400)
+    }, status=code)
