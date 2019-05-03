@@ -1,10 +1,7 @@
 import asyncio
-import base64
-
-import aiohttp
-import async_timeout
 
 from sputnik.clients.base import BaseClient
+from sputnik.clients.file_download import download_img
 from sputnik.settings import ANTI_CAPTCHA_KEY
 
 
@@ -16,14 +13,6 @@ class AntiCaptchaClient(BaseClient):
 
     create_task_url = 'createTask'
     get_task_url = 'getTaskResult'
-
-    async def download_captcha_image(self, captcha_url):
-        async with aiohttp.ClientSession(
-                connector=aiohttp.TCPConnector(verify_ssl=True)) as session:
-            with async_timeout.timeout(self.TIMEOUT):
-                async with session.get(url=captcha_url) as response:
-                    captcha_image = await response.read()
-        return base64.b64encode(captcha_image)
 
     async def crete_captcha_task(self, captcha_data):
         response = await self.post(
@@ -77,7 +66,7 @@ class AntiCaptchaService(AntiCaptchaClient):
 
     async def get_recaptcha_in_url(self, data, download_captcha=True):
         if download_captcha:
-            await self.download_captcha_image(data)
+            data = await download_img(data, self.TIMEOUT)
 
         task = await self.crete_captcha_task(data)
 
