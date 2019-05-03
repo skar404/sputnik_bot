@@ -77,7 +77,7 @@ class TelegramClient(BaseClient):
         )
         return req
 
-    async def edit_message(self, chat_id: str, message_id: int, text=None, reply_markup=None,
+    async def edit_message(self, chat_id: str, message_id: int, message=None, reply_markup=None,
                            parse_mode: ParseMode = ParseMode.MARKDOWN):
         params = {
             'chat_id': chat_id,
@@ -85,8 +85,8 @@ class TelegramClient(BaseClient):
             'parse_mode': parse_mode,
         }
 
-        if text is not None:
-            params.update({'text': text})
+        if message is not None:
+            params.update({'text': message})
 
         if reply_markup is not None:
             params.update({'reply_markup': reply_markup})
