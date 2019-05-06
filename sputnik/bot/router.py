@@ -27,7 +27,7 @@ class TelegramRouter:
         self.register_routers = {}
         self.bot_token = bot_token
 
-    def get_uri(self, message_type, key=None):
+    def get_uri(self, message_type: str, key=None):
         if key is None:
             key = self.all_key
         return '{type}://{key}'.format(type=message_type, key=key)
