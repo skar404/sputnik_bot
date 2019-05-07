@@ -43,7 +43,7 @@ services:
   database:
     image: postgres:9-alpine
     ports:
-    - 5400
+    - "5400:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
