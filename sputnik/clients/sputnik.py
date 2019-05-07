@@ -44,13 +44,23 @@ class SputnikService(SputnikClint):
         :param item:
         :return:
         """
-        enclosure = item.find('enclosure')
+        enclosures_list = item.findall('enclosure')
+
+        enclosure = None
+        if enclosures_list:
+            if len(enclosures_list) == 1:
+                enclosure = enclosures_list[0].attrib.get('url')
+            else:
+                enclosure = [i.attrib.get('url') for i in enclosures_list if i.attrib.get('url')[-3:].lower() in ['jpg', 'png']]
+                if enclosure:
+                    enclosure = enclosure[0]
 
         guid = item.findtext('guid')
         post_id = [i for i in guid.split('/') if i][-1]
+        text = ElementTree.tostring(item, encoding='UTF-8').decode('utf-8')
 
         description = item.findtext('description')
-        if '俄罗斯卫星通讯社' in description:
+        if '俄罗斯卫星通讯社' in description and '电' in description:
             description = ''.join(description.split('电')[1:]).strip()
 
         return Post(
@@ -62,9 +72,9 @@ class SputnikService(SputnikClint):
             pub_date=datetime.strptime(item.findtext('pubDate'), '%a, %d %b %Y %X %z').replace(tzinfo=None),
             description=description,
             category=item.findtext('category'),
-            enclosure=enclosure.attrib.get('url') if enclosure is not None else None,
+            enclosure=enclosure,
 
-            text=ElementTree.tostring(item, encoding='UTF-8').decode('utf-8')
+            text=text
         )
 
     def _get_post_list(self, rss_text: str) -> List[Post]:
