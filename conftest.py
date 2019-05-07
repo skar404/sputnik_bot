@@ -1,9 +1,13 @@
 import asyncio
 
 import pytest
+import sqlalchemy
 from aiohttp import web
+from async_generator import yield_, async_generator
 
+from sputnik.models.main import DataBase
 from sputnik.routes import setup_routes
+from sputnik.settings import DB_DSN
 
 
 @pytest.fixture()

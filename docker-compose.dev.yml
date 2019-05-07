@@ -4,12 +4,3 @@ services:
     image: postgres
     ports:
       - "5400:5432"
-  rabbitmq:
-    image: rabbitmq:3.7.8-management
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-      RABBITMQ_DEFAULT_VHOST: dev_vhost
-    ports:
-      - "5672:5672"
-      - "15672:15672"
