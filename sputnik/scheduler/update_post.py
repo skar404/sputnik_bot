@@ -4,12 +4,11 @@ from sputnik.models.post import PostModel
 from sputnik.settings import POST_USER
 
 
-async def update_post(app):
-    post_list = await SputnikService().get_post(with_link=False)
+async def update_post():
+    post_list = await SputnikService().get_post(with_link=True)
 
     for post in post_list:
         post_req: PostModel = await PostModel.query.where(PostModel.guid == post.guid).gino.first()
-
         kwargs = {
             'category': post.category,
             'description': post.description,
@@ -26,9 +25,8 @@ async def update_post(app):
             if post.short_link is None:
                 kwargs['short_link'] = await SputnikService().get_short_link(post.post_id[8:])
 
-            kwargs = {
-                'guid': post.guid
-            }
+            kwargs['guid'] = post.guid
+
             await PostModel.create(**kwargs)
         else:
             if post_req.short_link is None:
