@@ -1,5 +1,5 @@
 pipeline:
-  steps:
+  test_db:
     - name: test
       image: postgres:9-alpine
       commands:
