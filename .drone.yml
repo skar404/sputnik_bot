@@ -1,4 +1,10 @@
 pipeline:
+  steps:
+    - name: test
+      image: postgres:9-alpine
+      commands:
+        - psql -U postgres -d postgres -h database
+
   test:
     image: python
     commands:
@@ -47,4 +53,3 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres
