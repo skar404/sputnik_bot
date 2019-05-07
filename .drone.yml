@@ -2,7 +2,7 @@ pipeline:
   test_db:
     image: postgres:9-alpine
     commands:
-      - sleep 15
+      - sleep 5
       - psql -U postgres -d postgres -h database
 
   test:
