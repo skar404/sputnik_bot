@@ -2,4 +2,4 @@ ignore:
   - "sputnik/migrations"
   - "manage.py"
   - "conftest.py"
-  - "sputnik/scheduler/main.py"
+
