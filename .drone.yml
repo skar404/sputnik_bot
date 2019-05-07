@@ -12,6 +12,8 @@ pipeline:
       - pip install -r requirements-dev.txt
       - pytest --cov=./
       - codecov
+    environment:
+      - TEST_DB_DSN=postgres://postgres@database:5432/postgres
     secrets: [CODECOV_TOKEN]
 
   build:
