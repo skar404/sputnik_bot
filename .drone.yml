@@ -1,4 +1,10 @@
 pipeline:
+  test_db:
+    image: postgres:9-alpine
+    commands:
+      - sleep 5
+      - psql -U postgres -d postgres -h database
+
   test:
     image: python
     commands:
@@ -6,6 +12,8 @@ pipeline:
       - pip install -r requirements-dev.txt
       - pytest --cov=./
       - codecov
+    environment:
+      - TEST_DB_DSN=postgres://postgres@database:5432/postgres
     secrets: [CODECOV_TOKEN]
 
   build:
@@ -43,8 +51,7 @@ services:
   database:
     image: postgres:9-alpine
     ports:
-    - 5400
+    - 5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres

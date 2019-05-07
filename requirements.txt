@@ -1,3 +1,4 @@
+asynctest
 aio-pika==5.3.2
 aiocontextvars==0.2.2
 aiodns==1.2.0
