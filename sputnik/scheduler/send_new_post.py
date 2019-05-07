@@ -51,8 +51,11 @@ async def send_message(post: PostModel):
         await post.update(status_send_tg=True).apply()
 
 
-async def send_new_post(app):
-    posts_list: List[PostModel] = await PostModel.query.where(PostModel.status_send_tg.isnot(True)).gino.all()
+async def send_new_post():
+    posts_list: List[PostModel] = await PostModel.query \
+        .where(PostModel.status_send_tg.isnot(True)) \
+        .where(PostModel.enclosure != None) \
+        .gino.all()
 
     for post in posts_list:
         await send_message(post)

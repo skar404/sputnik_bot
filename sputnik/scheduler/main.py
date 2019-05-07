@@ -10,10 +10,9 @@ def init_jobs(app):
     scheduler = AsyncIOScheduler({
         'apscheduler.timezone': 'UTC',
     })
-    params = {'app': app}
 
-    scheduler.add_job(ping, 'interval', seconds=10, kwargs=params)
-    scheduler.add_job(update_post, 'interval', seconds=settings.UPDATE_POST_SECONDS, kwargs=params)
-    scheduler.add_job(send_new_post, 'interval', seconds=settings.SEND_POST_SECONDS, kwargs=params)
+    scheduler.add_job(ping, 'interval', seconds=10)
+    scheduler.add_job(update_post, 'interval', seconds=settings.UPDATE_POST_SECONDS)
+    scheduler.add_job(send_new_post, 'interval', seconds=settings.SEND_POST_SECONDS)
 
     return scheduler
