@@ -11,7 +11,7 @@ import aiohttp
 import async_timeout
 import rsa
 from aiohttp import ContentTypeError, ClientSession
-from marshmallow.compat import urlparse
+
 
 from sputnik.clients.anti_captcha import AntiCaptchaService
 from sputnik.clients.base import BaseClient, RequestData
