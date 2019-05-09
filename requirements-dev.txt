@@ -1,3 +1,8 @@
-codecov==2.0.15
-pytest-cov==2.6.1
-pytest-aiohttp==0.3.0
+pytest
+asynctest
+async_generator
+pytest-asyncio
+
+codecov
+pytest-cov
+pytest-aiohttp
