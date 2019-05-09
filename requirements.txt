@@ -7,3 +7,7 @@ manage.py==0.2.10
 marshmallow==2.19.2
 rsa==4.0
 sentry-sdk==0.7.14
+
+# migration
+alembic==1.0.10
+psycopg2-binary==2.8.2
