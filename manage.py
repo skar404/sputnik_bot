@@ -17,7 +17,7 @@ manager = Manager()
 
 @manager.command
 def api():
-    run_app(name='api', api=True, port=8080)
+    run_app(name='api', api=True, update_web_hook=True, port=8080)
 
 
 @manager.command
