@@ -7,7 +7,6 @@ from sputnik.clients.sputnik import Post
 from sputnik.models.main import DataBase
 from sputnik.models.post import PostModel
 from sputnik.scheduler.update_post import update_post
-from sputnik.settings import TEST_DB_DSN
 
 POST_LIST = [
     Post(
@@ -72,8 +71,7 @@ POST_LIST = [
 
 @patch('sputnik.clients.sputnik.SputnikService.get_post', return_value=POST_LIST)
 @patch('sputnik.clients.sputnik.SputnikService.get_short_link', return_value='http://sptnkne.ws/mvPO')
-async def test_update_post(_mock_get_post, _mock_get_short_link):
-    await DataBase.set_bind(TEST_DB_DSN)
+async def test_update_post(_mock_get_post, _mock_get_short_link, cli):
     await DataBase.gino.create_all()
 
     await PostModel.create(

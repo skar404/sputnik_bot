@@ -1,5 +1,4 @@
 from sputnik.main import *
-from sputnik.settings import TEST_DB_DSN
 
 
 async def test_client(cli):
@@ -13,7 +12,6 @@ async def test_client(cli):
 
 
 async def test_bot_bad_request(cli):
-    await DataBase.set_bind(TEST_DB_DSN)
     request = await cli.post('/bot')
     data = await request.json()
 
