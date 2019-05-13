@@ -24,7 +24,7 @@ WEIBO_AUTH = WeiboAuthData(
     exec_time=21,
     password='test',
     password_secret=b'7ef1cd3221ce3ae4778d18e5551e3613239ec1045ee14bb1876074344409d6705e8ffe6e116e4516cbc562ed187b1d3c1927720a1002a2329b1451777230412316039d98bfd671cd2c65d05ca98f52a6b4579e2e3c3d2970e8ddfde8824caec1c2f0707d8045d93ed96ff90dbc7f9c3006b40f79bee4abbadf9dc7621a701abb',
-    cookies=COOKIE
+    cookies=COOKIE,
 )
 
 
@@ -81,3 +81,52 @@ async def test_push_image(_request_mock):
         .push_image(image_raw='test', nick='@test')
 
     assert data == RequestData()
+
+
+async def test_get_password_secret():
+    data = await WeiboParserService(cookies=COOKIE, weibo_auth=WEIBO_AUTH) \
+        .get_password_secret(WEIBO_AUTH)
+
+    assert type(data) == bytes
+
+
+async def test_update_auth_data_set_password_secret():
+    await WeiboParserService(cookies=COOKIE, weibo_auth=WEIBO_AUTH) \
+        .update_auth_data_set_password_secret(WEIBO_AUTH)
+
+    assert True
+
+
+async def test_get_captcha_url():
+    captcha_url = await WeiboParserService(cookies=COOKIE, weibo_auth=WEIBO_AUTH) \
+        .get_captcha_url(WEIBO_AUTH)
+
+    assert 'http://login.sina.com.cn/cgi/pin.php' in captcha_url
+
+
+@patch('sputnik.clients.weibo_parser.WeiboParserService._request', return_value=RequestData(
+    text='<html><head><script language=\'javascript\'>parent.sinaSSOController.feedBackUrlCallBack({"result":true,"userinfo":{"uniqueid":"12412351232","userid":null,"displayname":null,"userdomain":"?wvr=5&lf=reg"}});</script></head><body></body></html>'
+))
+async def test_check_user_is_login_true(_request_mock):
+    captcha_url = await WeiboParserService(cookies=COOKIE, weibo_auth=WEIBO_AUTH) \
+        .check_user_is_login(WEIBO_AUTH)
+
+    assert captcha_url
+
+
+@patch('sputnik.clients.weibo_parser.WeiboParserService._request', return_value=RequestData(
+    text='<html><head><script language=\'javascript\'>parent.sinaSSOController.feedBackUrlCallBack({"result":true,"userinfo":{"uniqusseid":"12412351232","userid":null,"displayname":null,"userdomain":"?wvr=5&lf=reg"}});</script></head><body></body></html>'
+))
+async def test_check_user_is_login_false(_request_mock):
+    captcha_url = await WeiboParserService(cookies=COOKIE, weibo_auth=WEIBO_AUTH) \
+        .check_user_is_login(WEIBO_AUTH)
+
+    assert not captcha_url
+
+
+@patch('sputnik.clients.weibo_parser.WeiboParserService._request', return_value=RequestData())
+async def test_create_post(_request_mock):
+    post = await WeiboParserService(cookies=COOKIE, weibo_auth=WEIBO_AUTH) \
+        .create_post(message='test', photo_id='123')
+
+    assert post is None
