@@ -23,3 +23,11 @@ async def test_bot_bad_request(cli):
 
     assert request.status == 400
     assert data == {'status': 'ERROR', 'errors': {'test': ['Unknown field.']}}
+
+
+async def test_bot_success_request(cli):
+    request = await cli.post('/bot', json={})
+    data = await request.json()
+
+    assert request.status == 200
+    assert data == {'status': 'SUCCESS'}
