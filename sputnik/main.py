@@ -22,7 +22,7 @@ async def setup_data_base(app: web.Application):
     ctx = ssl.create_default_context(capath='./.postgresql.pem')
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
-    await DataBase.set_bind(settings.DB_DSN, ssl=None)
+    await DataBase.set_bind(settings.DB_DSN, ssl=ctx)
 
 
 def init_app(name: str, api: bool = False, schedule: bool = False, update_web_hook: bool = False):
@@ -35,11 +35,6 @@ def init_app(name: str, api: bool = False, schedule: bool = False, update_web_ho
     )
 
     app: web.Application = web.Application()
-
-    ctx = ssl.create_default_context(capath='./.postgresql.pem')
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
-
     app.on_startup.append(setup_data_base)
 
     if api is True:
