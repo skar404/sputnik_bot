@@ -19,9 +19,11 @@ async def setup_telegram(app: web.Application):
 
 
 async def setup_data_base(app: web.Application):
-    ctx = ssl.create_default_context(capath='./.postgresql.pem')
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
+    ctx = None
+    if settings.DB_SSL:
+        ctx = ssl.create_default_context(capath='./.postgresql.pem')
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
     await DataBase.set_bind(settings.DB_DSN, ssl=ctx)
 
 
