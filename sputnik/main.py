@@ -14,7 +14,9 @@ from sputnik.scheduler.main import init_jobs
 async def setup_telegram(app: web.Application):
     from sputnik.clients.telegram.client import TelegramSDK
     req = (await TelegramSDK().update_web_hook())
-    assert req.json['ok']
+    if not req.json['ok']:
+        logging.exception('not update web hook')
+
     logging.info('update telegram web hook url')
 
 
