@@ -103,7 +103,9 @@ async def send_message_weibo(chat_id, message_id, post_id):
             is_err = False
             break
         except Exception as ex:
-            logging.exception('error send waibo')
+            logging.exception('error send waibo', exc_info={
+                ex: ex
+            })
 
     if is_err:
         logging.exception('error send post to weibo')
@@ -168,13 +170,15 @@ async def statistics(message, _request):
 
     chat_id = message['user_info']['id']
 
-    create_post_count_list = await DataBase.all("""select date_trunc('day', created_at) AS "day" , count(*)
+    create_post_count_list = await DataBase.all("""
+select date_trunc('day', created_at) AS "day" , count(*)
 from post
 WHERE created_at > now() - interval '7 days'
 GROUP BY 1
 order by 1 DESC;""")
 
-    send_weibo_count_list = await DataBase.all("""select date_trunc('day', created_at) AS "day" , min(created_at), 
+    send_weibo_count_list = await DataBase.all("""
+select date_trunc('day', created_at) AS "day" , min(created_at), 
     max(created_at), count(*)
 from post
 WHERE created_at > now() - interval '7 days' and
