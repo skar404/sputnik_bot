@@ -14,7 +14,7 @@ pipeline:
       - codecov
     environment:
       - DB_DSN=postgres://postgres@database:5432/postgres
-      - DB_SSL=False
+      - DB_SSL=false
     secrets: [CODECOV_TOKEN]
 
   build:
