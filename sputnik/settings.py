@@ -33,7 +33,7 @@ WEIBO_TEST_LOGIN: str = env.str('WEIBO_LOGIN', default=None)
 WEIBO_TEST_PASSWORD: str = env.str('WEIBO_PASSWORD', default=None)
 
 DB_DSN: str = env.str('DB_DSN', default='postgres://postgres:postgres@127.0.0.1:5400/postgres')
-DB_SSL: bool = env.str('DB_SSL', default=True)
+DB_SSL: bool = env.bool('DB_SSL', default=True)
 # drone ci: postgres://postgres@database:5432/postgres
 
 POST_USER: List[str] = env.list('POST_USER', default=[])
