@@ -3,30 +3,29 @@ import ssl
 
 import sentry_sdk
 from aiohttp import web
-from asyncpg.pool import Pool
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
 from sputnik import settings
-from sputnik.clients.weibo_parser import WeiboAuthData
 from sputnik.models.main import DataBase
 from sputnik.routes import setup_routes
 from sputnik.scheduler.main import init_jobs
 
 
-class WebApp(web.Application):
-    db_pool: Pool
-    weibo_login: WeiboAuthData
-    weibo_login_test: WeiboAuthData
-
-
-async def init_telegram():
+async def setup_telegram(app: web.Application):
     from sputnik.clients.telegram.client import TelegramSDK
     req = (await TelegramSDK().update_web_hook())
     assert req.json['ok']
     logging.info('update telegram web hook url')
 
 
-async def init_app(name, api=False, schedule=False, update_web_hook=True):
+async def setup_data_base(app: web.Application):
+    ctx = ssl.create_default_context(capath='./.postgresql.pem')
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    await DataBase.set_bind(settings.DB_DSN, ssl=None)
+
+
+def init_app(name: str, api: bool = False, schedule: bool = False, update_web_hook: bool = False):
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
         integrations=[AioHttpIntegration()],
@@ -35,16 +34,17 @@ async def init_app(name, api=False, schedule=False, update_web_hook=True):
         server_name=name,
     )
 
-    app = WebApp()
+    app: web.Application = web.Application()
 
     ctx = ssl.create_default_context(capath='./.postgresql.pem')
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
-    await DataBase.set_bind(settings.DB_DSN, ssl=ctx)
+
+    app.on_startup.append(setup_data_base)
 
     if api is True:
         if update_web_hook:
-            await init_telegram()
+            app.on_startup.append(setup_telegram)
         setup_routes(app)
 
     if schedule is True:
@@ -53,5 +53,5 @@ async def init_app(name, api=False, schedule=False, update_web_hook=True):
     return app
 
 
-def run_app(port, name, api=False, schedule=False,):
-    web.run_app(init_app(name, api, schedule), port=port)
+def run_app(port, name, api=False, schedule=False, update_web_hook=False):
+    web.run_app(init_app(name, api, schedule, update_web_hook), port=port)

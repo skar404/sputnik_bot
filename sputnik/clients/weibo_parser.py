@@ -19,7 +19,7 @@ from sputnik.clients.base import BaseClient, RequestData
 
 @dataclass
 class WeiboAuthData:
-    username_base64: int
+    username_base64: str
     ret_code: int
     server_time: int
     pc_id: str
@@ -27,7 +27,6 @@ class WeiboAuthData:
     pubkey: str
     rsakv: str
     is_open_lock: int
-    sms_url: str
     show_pin: int
     exec_time: int
 
@@ -36,22 +35,29 @@ class WeiboAuthData:
 
     cookies: SimpleCookie = None
 
+    sms_url: str = None
+
+def cookies_to_dict(cookies: SimpleCookie):
+    return {key: morsel.value for key, morsel in cookies.items()}
+
 
 class WeiboParserClient(BaseClient):
     HEADERS = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0'
     }
 
-    def __init__(self):
-        self.cookies = None
-        self.weibo_auth = None
-
-    async def __aenter__(self):
-        # self.jar = aiohttp.CookieJar(unsafe=True)
+    def __init__(self, cookies=None, weibo_auth=None):
         self.aiohttp_session: ClientSession = aiohttp.ClientSession(
             connector=aiohttp.TCPConnector(verify_ssl=self.VERIFY_SSL),
             cookie_jar=aiohttp.CookieJar(unsafe=True))
 
+        self.cookies = cookies
+        if self.cookies is not None:
+            self.aiohttp_session.cookie_jar.update_cookies(self.cookies)
+
+        self.weibo_auth = weibo_auth
+
+    async def __aenter__(self):
         await self.set_base_cookies()
 
         return self
@@ -59,12 +65,9 @@ class WeiboParserClient(BaseClient):
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.aiohttp_session.close()
 
-        return
-
     async def set_base_cookies(self):
-        async with self.aiohttp_session.get("http://weibo.com/login.php", headers=self.HEADERS) as response:
-            self.cookies = response.cookies
-            self.aiohttp_session.cookie_jar.update_cookies(response.cookies)
+        self.cookies = await self.get_base_cookies()
+        self.aiohttp_session.cookie_jar.update_cookies(self.cookies)
 
     async def _request(self, *args, **kwargs) -> RequestData:
         req = RequestData()
@@ -90,6 +93,10 @@ class WeiboParserClient(BaseClient):
                 req.cookies = response.cookies
 
         return req
+
+    async def get_base_cookies(self):
+        async with self.aiohttp_session.get("http://weibo.com/login.php", headers=self.HEADERS) as response:
+            return response.cookies
 
     async def download_captcha(self, captcha_url):
         async with self.aiohttp_session.get(url=captcha_url, cookies=self.cookies) as response:
