@@ -55,3 +55,5 @@ TG_PROXY_URL = env.str('TG_PROXY_URL', default=None)
 SENTRY_DSN: str = env.str('SENTRY_DSN', default=None)
 
 DRONE_COMMIT: str = env.str('DRONE_COMMIT', default=None)
+
+BITLY_ACCESS_TOKEN: str = env.str('BITLY_ACCESS_TOKEN', default=None)

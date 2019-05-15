@@ -1,5 +1,6 @@
 from sputnik.clients.sputnik import SputnikService
 from sputnik.models.post import PostModel
+from sputnik.utils.short_link import get_short_link
 
 
 async def update_post():
@@ -21,14 +22,14 @@ async def update_post():
 
         if post_req is None:
             if post.short_link is None:
-                kwargs['short_link'] = await SputnikService().get_short_link(post.post_id[8:])
+                kwargs['short_link'] = await get_short_link(post.post_id, post.guid)
 
             kwargs['guid'] = post.guid
 
             await PostModel.create(**kwargs)
         else:
             if post_req.short_link is None:
-                kwargs['short_link'] = await SputnikService().get_short_link(post.post_id[8:])
+                kwargs['short_link'] = await get_short_link(post.post_id, post.guid)
 
             if post_req.enclosure is None:
                 await post_req.update(**kwargs).apply()
