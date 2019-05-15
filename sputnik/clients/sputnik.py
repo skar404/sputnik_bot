@@ -118,7 +118,7 @@ class SputnikService(SputnikClint):
         :return:
         """
         # формирует список с функциями и выполняет их асинхронно
-        post_ids_list = [self._get_guid_and_short_link(item.guid, item) for item in post_list]
+        post_ids_list = [self._get_guid_and_short_link(item.guid, item.post_id) for item in post_list]
         short_link: Dict[str, str] = dict(await asyncio.gather(*post_ids_list))
 
         # подемешиваем короткие ссылки в посты
