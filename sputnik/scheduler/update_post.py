@@ -1,7 +1,5 @@
 from sputnik.clients.sputnik import SputnikService
-from sputnik.clients.telegram.client import TelegramSDK
 from sputnik.models.post import PostModel
-from sputnik.settings import POST_USER
 
 
 async def update_post():
