@@ -33,8 +33,6 @@ class SputnikClintError(Exception):
 
 
 class SputnikClint(BaseClient):
-    PROXY_URL = TG_PROXY_URL
-
     async def get_rss(self):
         data = await self.get(settings.RSS_FEED)
         return data
