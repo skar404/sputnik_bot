@@ -4,13 +4,14 @@ from sputnik.clients.sputnik import SputnikService
 from sputnik.clients.telegram.client import TelegramSDK
 from sputnik.models.post import PostModel
 from sputnik.settings import POST_USER
+from sputnik.utils.short_link import get_short_link
 from sputnik.utils.text import get_post_text, markdown_shielding
 
 
 async def send_message(post: PostModel):
     for user_id in POST_USER:
         if post.short_link is None:
-            short_link = await SputnikService().get_short_link(post.post_id[8:])
+            short_link = await get_short_link(post.post_id, post.guid)
             await post.update(short_link=short_link).apply()
 
         # replace is mix markdown

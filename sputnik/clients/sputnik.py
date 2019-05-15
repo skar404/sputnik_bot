@@ -7,6 +7,8 @@ from typing import List, Dict, Tuple
 
 from sputnik import settings
 from sputnik.clients.base import BaseClient
+from sputnik.settings import TG_PROXY_URL
+from sputnik.utils.short_link import get_short_link
 
 
 @dataclass
@@ -26,7 +28,13 @@ class Post:
     short_link: str = None
 
 
+class SputnikClintError(Exception):
+    pass
+
+
 class SputnikClint(BaseClient):
+    PROXY_URL = TG_PROXY_URL
+
     async def get_rss(self):
         data = await self.get(settings.RSS_FEED)
         return data
@@ -99,7 +107,7 @@ class SputnikService(SputnikClint):
         :return:
         """
         return (
-            guid, await self.get_short_link(post_id)
+            guid, await get_short_link(post_id, guid)
         )
 
     async def add_link_in_post(self, post_list: List[Post]):
@@ -110,7 +118,7 @@ class SputnikService(SputnikClint):
         :return:
         """
         # формирует список с функциями и выполняет их асинхронно
-        post_ids_list = [self._get_guid_and_short_link(item.guid, item.post_id[8:]) for item in post_list]
+        post_ids_list = [self._get_guid_and_short_link(item.guid, item) for item in post_list]
         short_link: Dict[str, str] = dict(await asyncio.gather(*post_ids_list))
 
         # подемешиваем короткие ссылки в посты
@@ -144,4 +152,6 @@ class SputnikService(SputnikClint):
         """
 
         req = await self.create_short_link(post_id)
+        if req.code != 200:
+            raise SputnikClintError(f'http code is {req.code}')
         return req.text
