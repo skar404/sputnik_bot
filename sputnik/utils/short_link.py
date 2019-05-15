@@ -2,7 +2,7 @@ from sputnik.clients.bitly import BitlyClint
 from sputnik.clients.sputnik import SputnikService, SputnikClintError
 
 
-def get_short_link(post_id: str, full_link: str):
+async def get_short_link(post_id: str, full_link: str):
     try:
         short_link = await SputnikService().get_short_link(post_id[8:])
     except SputnikClintError:
