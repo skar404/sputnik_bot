@@ -12,4 +12,4 @@ from sputnik.clients.bitly import BitlyClint
     code=200))
 async def test_create_short_link(_request_mock):
     short_link = await BitlyClint().create_short_link(f'http://google.com/link/')
-    assert short_link == 'http://bit.ly/2JrY02X'
+    assert short_link['url'] == 'http://bit.ly/2JrY02X'
