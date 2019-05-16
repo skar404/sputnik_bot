@@ -70,7 +70,7 @@ POST_LIST = [
 
 
 @patch('sputnik.clients.sputnik.SputnikService.get_post', return_value=POST_LIST)
-@patch('sputnik.clients.sputnik.SputnikService.get_short_link', return_value='http://sptnkne.ws/mvPO')
+@patch('sputnik.utils.short_link.get_short_link', return_value='http://sptnkne.ws/mvPO')
 async def test_update_post(_mock_get_post, _mock_get_short_link, cli):
     await DataBase.gino.create_all()
 
