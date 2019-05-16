@@ -14,4 +14,4 @@ class BitlyClint(BaseClient):
             'longUrl': long_url,
             'access_token': BITLY_ACCESS_TOKEN
         })
-        return data.json['data']['url']
+        return data.json.get('data', {})
