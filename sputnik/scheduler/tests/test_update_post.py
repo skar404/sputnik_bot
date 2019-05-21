@@ -69,9 +69,12 @@ POST_LIST = [
 ]
 
 
+@patch('sputnik.clients.bitly.BitlyClint.create_short_link', return_value={
+    'url': 'http://sptnkne.ws/mvPO'
+})
 @patch('sputnik.clients.sputnik.SputnikService.get_post', return_value=POST_LIST)
-@patch('sputnik.utils.short_link.get_short_link', return_value='http://sptnkne.ws/mvPO')
-async def test_update_post(_mock_get_post, _mock_get_short_link, cli):
+async def test_update_post(_mock_get_short_link, _mock_get_post, cli):
+    await DataBase.gino.drop_all()
     await DataBase.gino.create_all()
 
     await PostModel.create(
