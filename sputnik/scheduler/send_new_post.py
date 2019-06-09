@@ -55,8 +55,8 @@ async def send_message(post: PostModel):
 async def send_new_post():
     posts_list: List[PostModel] = await PostModel.query \
         .where(PostModel.status_send_tg.isnot(True)) \
-        .where(PostModel.enclosure != None) \
         .gino.all()
+        # .where(PostModel.enclosure != None) \
 
     for post in posts_list:
         await send_message(post)
