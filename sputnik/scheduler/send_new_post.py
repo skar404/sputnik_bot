@@ -1,23 +1,36 @@
+from enum import Enum
 from typing import List
 
-from sputnik.clients.sputnik import SputnikService
 from sputnik.clients.telegram.client import TelegramSDK
 from sputnik.models.post import PostModel
 from sputnik.settings import POST_USER
 from sputnik.utils.short_link import get_short_link
-from sputnik.utils.text import get_post_text, markdown_shielding
+from sputnik.utils.text import get_post_text, markdown_shielding, get_lightning_text
 
 
-async def send_message(post: PostModel):
+class TextTemplate(Enum):
+    DEFAULT = 0
+    LIGHTNING = 1
+
+
+async def send_message(post: PostModel, template: TextTemplate):
     for user_id in POST_USER:
         if post.short_link is None:
             short_link = await get_short_link(post.post_id, post.guid)
             await post.update(short_link=short_link).apply()
 
+        if template is TextTemplate.LIGHTNING:
+            text_raw = get_lightning_text(post)
+            tags = '#post #lightning'
+        else:
+            text_raw = get_post_text(post)
+            tags = '#post'
+
         # replace is mix markdown
-        weibo_text = markdown_shielding(get_post_text(post))
-        message = '**Запостить новость:**\n{weibo_text} \n\nполная ссылка: {guid}'.format(
-            weibo_text=weibo_text, guid=markdown_shielding(post.guid)
+        weibo_text = markdown_shielding(text_raw)
+
+        message = '**Запостить новость:**\n{weibo_text} \n\nполная ссылка: {guid}\n{tags}'.format(
+            weibo_text=weibo_text, guid=markdown_shielding(post.guid), tags=tags
         )
 
         kwarg = {
@@ -56,7 +69,9 @@ async def send_new_post():
     posts_list: List[PostModel] = await PostModel.query \
         .where(PostModel.status_send_tg.isnot(True)) \
         .gino.all()
-        # .where(PostModel.enclosure != None) \
 
     for post in posts_list:
-        await send_message(post)
+        if post.description == post.title:
+            await send_message(post, TextTemplate.LIGHTNING)
+        elif post.enclosure is not None:
+            await send_message(post, TextTemplate.DEFAULT)

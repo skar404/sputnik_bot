@@ -11,7 +11,7 @@ from sputnik.models.main import DataBase
 from sputnik.models.post import PostModel
 from sputnik.settings import BOT_TOKEN
 from sputnik.shortcuts.main import users_info, white_list, get_thank_message
-from sputnik.utils.text import get_post_text
+from sputnik.utils.text import get_post_text, get_lightning_text
 
 bot_handler = TelegramRouter(bot_token=BOT_TOKEN)
 
@@ -94,7 +94,10 @@ async def send_message_weibo(chat_id, message_id, post_id):
 
     image = await download_img(post.enclosure)
 
-    text = get_post_text(post)
+    if post.title == post.description:
+        text = get_lightning_text(post)
+    else:
+        text = get_post_text(post)
 
     # TODO хадкот чтобы в случаи падния повторно отпаравлять
     is_err = True

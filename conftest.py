@@ -1,6 +1,10 @@
+import sys
 import pytest
 
 from sputnik.main import init_app
+
+
+sys.dont_write_bytecode = True
 
 
 @pytest.fixture
