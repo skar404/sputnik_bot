@@ -29,7 +29,7 @@ async def send_message(post: PostModel, template: TextTemplate):
         # replace is mix markdown
         weibo_text = markdown_shielding(text_raw)
 
-        message = '**Запостить новость:**\n{weibo_text} \n\nполная ссылка: {guid}\n{tags}'.format(
+        message = '**Запостить новость:**\n{weibo_text} \n\nполная ссылка: {guid}\n\nтеги: {tags}'.format(
             weibo_text=weibo_text, guid=markdown_shielding(post.guid), tags=tags
         )
 
