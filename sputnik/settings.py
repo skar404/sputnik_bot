@@ -8,6 +8,8 @@ env.read_envfile(os.path.join(BASE_DIR, '.env'))
 
 
 # Setting Gunicorn App
+APP_VERSION = '2019.1'
+
 ENVIRONMENT: str = env.str('ENVIRONMENT', default='dev')
 
 WORKERS: int = env.int('WORKERS', default=1)

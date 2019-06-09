@@ -65,7 +65,8 @@ async def command_help(message, _request):
         f'Ссылка на бота: {settings.BOT_WEB_HOOK}\n' \
         f'Проверка подключения в базе данных: {is_connect_db}\n' \
         f'Время между обновлениями постов: {settings.UPDATE_POST_SECONDS}\n' \
-        f'Время между отправкой постов в TG: {settings.SEND_POST_SECONDS}'
+        f'Время между отправкой постов в TG: {settings.SEND_POST_SECONDS}\n' \
+        f'Версия: {settings.APP_VERSION}'
 
     await TelegramSDK().send_message(chat_id=message['message']['chat']['id'], message=text)
 
