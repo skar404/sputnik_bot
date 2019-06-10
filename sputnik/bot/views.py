@@ -74,7 +74,8 @@ async def command_help(message, _request):
 async def post_to_weibo(text, image):
     async with WeiboParserService() as weibo_service:
         await weibo_service.login_user(settings.WEIBO_LOGIN, settings.WEIBO_PASSWORD)
-        photo_id = await weibo_service.get_id_and_push_image(image, settings.WEIBO_NICK)
+        if image is None:
+            photo_id = await weibo_service.get_id_and_push_image(image, settings.WEIBO_NICK)
         await weibo_service.create_post(text, photo_id)
 
 
@@ -82,9 +83,7 @@ async def send_message_weibo(chat_id, message_id, post_id):
     start_time = time.time()
 
     post: PostModel = await PostModel.query.where(PostModel.id == post_id).gino.first()
-    if post.enclosure[-3:] != 'jpg':
-        # TODO сказать что это не картинка и не получаться обновить
-        # TODO убрать на уровне отправеки в tg
+    if post.enclosure[-3:] != 'jpg' and post.title != post.description:
         return
 
     if post.status_posted is True:
@@ -92,7 +91,9 @@ async def send_message_weibo(chat_id, message_id, post_id):
 
     await post.update(status_posted=True).apply()
 
-    image = await download_img(post.enclosure)
+    image = None
+    if post.enclosure[-3:] != 'jpg':
+        image = await download_img(post.enclosure)
 
     if post.title == post.description:
         text = get_lightning_text(post)
