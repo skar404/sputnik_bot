@@ -83,7 +83,7 @@ async def send_message_weibo(chat_id, message_id, post_id):
     start_time = time.time()
 
     post: PostModel = await PostModel.query.where(PostModel.id == post_id).gino.first()
-    if post.enclosure[-3:] != 'jpg' and post.title != post.description:
+    if post.enclosure[-3:] not in ('jpg', 'png') and post.title != post.description:
         return
 
     if post.status_posted is True:
@@ -92,7 +92,7 @@ async def send_message_weibo(chat_id, message_id, post_id):
     await post.update(status_posted=True).apply()
 
     image = None
-    if post.enclosure[-3:] != 'jpg':
+    if post.enclosure[-3:] not in ('jpg', 'png'):
         image = await download_img(post.enclosure)
 
     if post.title == post.description:
@@ -195,15 +195,15 @@ order by 1 DESC;""")
 
     message = 'Статистика за неделю в формате (дата, количество)\n\n'
     if send_weibo_count_text:
-        message += 'Постов было отправленно в weibo: ```\n' \
+        message += 'Постов было отправленно в weibo: \n```\n' \
                     f'{send_weibo_count_text} ```\n\n'
 
     if create_post_count_text:
-        message += 'Постов было записано в базу: ```\n' \
-                    f'{create_post_count_text} ```\n\n'
+        message += 'Постов было записано в базу: \n```\n' \
+                    f'{create_post_count_text} \n```\n\n'
 
     if schedule_work:
-        message += 'Примерный рафик рабоыт: ```\n' \
+        message += 'Примерный рафик рабоыт: \n```\n' \
                     f'{schedule_work} ```'
 
     await TelegramSDK().send_message(

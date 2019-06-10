@@ -46,7 +46,7 @@ async def send_message(post: PostModel, template: TextTemplate):
         }
 
         method_send = TelegramSDK().send_message
-        if post.enclosure is not None and post.enclosure[-3:].lower() == 'jpg':
+        if post.enclosure is not None and post.enclosure[-3:].lower() in ('jpg', 'png'):
             kwarg.update({'photo': post.enclosure})
             method_send = TelegramSDK().send_photo
 

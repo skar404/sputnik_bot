@@ -37,6 +37,7 @@ class WeiboAuthData:
 
     sms_url: str = None
 
+
 def cookies_to_dict(cookies: SimpleCookie):
     return {key: morsel.value for key, morsel in cookies.items()}
 

@@ -57,7 +57,7 @@ class SputnikService(SputnikClint):
             if len(enclosures_list) == 1:
                 enclosure = enclosures_list[0].attrib.get('url')
             else:
-                enclosure = [i.attrib.get('url') for i in enclosures_list if i.attrib.get('url')[-3:].lower() in ['jpg', 'png']]
+                enclosure = [i.attrib.get('url') for i in enclosures_list if i.attrib.get('url')[-3:].lower() in ('jpg', 'png')]
                 if enclosure:
                     enclosure = enclosure[0]
 
