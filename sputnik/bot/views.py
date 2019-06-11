@@ -98,7 +98,7 @@ async def send_message_weibo(chat_id, message_id, post_id):
     await post.update(status_posted=True).apply()
 
     image = None
-    if post.enclosure[-3:] not in ('jpg', 'png'):
+    if post.enclosure[-3:] in ('jpg', 'png'):
         image = await download_img(post.enclosure)
 
     if post.title == post.description:
