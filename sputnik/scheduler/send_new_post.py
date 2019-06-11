@@ -1,48 +1,35 @@
-from enum import Enum
 from typing import List
 
 from sputnik.clients.telegram.client import TelegramSDK
 from sputnik.models.post import PostModel
 from sputnik.settings import POST_USER
 from sputnik.utils.short_link import get_short_link
-from sputnik.utils.text import get_post_text, markdown_shielding, get_lightning_text
+from sputnik.utils.telegram import get_start_post_reply_markup
+from sputnik.utils.text import markdown_shielding, get_post_text, is_lightning
 
 
-class TextTemplate(Enum):
-    DEFAULT = 0
-    LIGHTNING = 1
-
-
-async def send_message(post: PostModel, template: TextTemplate):
+async def send_message(post: PostModel):
     for user_id in POST_USER:
         if post.short_link is None:
             short_link = await get_short_link(post.post_id, post.guid)
             await post.update(short_link=short_link).apply()
 
-        if template is TextTemplate.LIGHTNING:
-            text_raw = get_lightning_text(post)
-            tags = '#post #lightning'
-        else:
-            text_raw = get_post_text(post)
-            tags = '#post'
+        tags_list = {'#post', f'#id_{post.id}'}
+        if is_lightning(post):
+            tags_list.add('#lightning')
+        text_raw = get_post_text(post)
 
         # replace is mix markdown
         weibo_text = markdown_shielding(text_raw)
 
-        message = '**Запостить новость:**\n{weibo_text} \n\nполная ссылка: {guid}\n\nтеги: {tags}'.format(
-            weibo_text=weibo_text, guid=markdown_shielding(post.guid), tags=tags
+        message = '{weibo_text} \n\nполная ссылка: {guid}\n\nтеги: {tags}'.format(
+            weibo_text=weibo_text, guid=markdown_shielding(post.guid), tags=' '.join(tags_list)
         )
 
         kwarg = {
             'chat_id': user_id,
             'message': message,
-            'reply_markup': {
-                'inline_keyboard': [[
-                    {"text": f"к новости", "url": post.guid},
-                ], [
-                    {"text": "Запостить", "callback_data": f'post_message:id:{post.id}'},
-                ]]
-            }
+            'reply_markup': get_start_post_reply_markup(url=post.guid, post_id=post.id)
         }
 
         method_send = TelegramSDK().send_message
@@ -71,7 +58,4 @@ async def send_new_post():
         .gino.all()
 
     for post in posts_list:
-        if post.description == post.title:
-            await send_message(post, TextTemplate.LIGHTNING)
-        elif post.enclosure is not None:
-            await send_message(post, TextTemplate.DEFAULT)
+        await send_message(post)

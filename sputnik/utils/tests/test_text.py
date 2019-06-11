@@ -1,5 +1,5 @@
 from sputnik.models.post import PostModel
-from sputnik.utils.text import get_post_text, markdown_shielding
+from sputnik.utils.text import get_default_post_text, markdown_shielding
 
 
 def test_get_post_text():
@@ -7,7 +7,7 @@ def test_get_post_text():
     post.title = 'title'
     post.description = 'description'
     post.short_link = 'https://short_link.ru'
-    post_text = get_post_text(post)
+    post_text = get_default_post_text(post)
 
     assert post_text == '【title】description https://short_link.ru'
 

@@ -4,21 +4,17 @@ import time
 
 from sputnik import settings
 from sputnik.clients.file_download import download_img
-from sputnik.clients.telegram.client import TelegramSDK
+from sputnik.clients.telegram.client import TelegramSDK, ChatTelegramSDK
 from sputnik.bot.router import TelegramRouter
 from sputnik.clients.weibo_parser import WeiboParserService
 from sputnik.models.main import DataBase
 from sputnik.models.post import PostModel
 from sputnik.settings import BOT_TOKEN
 from sputnik.shortcuts.main import users_info, white_list, get_thank_message
-from sputnik.utils.text import get_post_text, get_lightning_text
+from sputnik.utils.telegram import get_start_post_reply_markup
+from sputnik.utils.text import get_post_text, is_valid_post
 
 bot_handler = TelegramRouter(bot_token=BOT_TOKEN)
-
-
-class RabbitMessageType:
-    SEND_SONG_LIST = 'SEND_SONG_LIST'
-    DOWNLOAD_SONG = 'DOWNLOAD_SONG'
 
 
 @bot_handler.command(command='start')
@@ -31,9 +27,7 @@ async def command_start(message, _request):
         'Данный бот уже настроен и теперь ты будешь получать уведомления о всех новостях\n' \
         f'Бот обнволяет посты раз в {settings.UPDATE_POST_SECONDS} секунд и\n' \
         f'отправлет их в telegram раз в {settings.SEND_POST_SECONDS} секунд.'
-
-    await TelegramSDK() \
-        .send_message(chat_id=message['message']['chat']['id'], message=text)
+    await TelegramSDK().send_message(chat_id=message['message']['chat']['id'], message=text)
 
 
 @bot_handler.command(command='ping')
@@ -79,62 +73,55 @@ async def post_to_weibo(text, image):
         await weibo_service.create_post(text, photo_id)
 
 
-async def send_message_weibo(chat_id, message_id, post_id):
+async def send_message_weibo(telegram_sdk, post_id):
     start_time = time.time()
 
     post: PostModel = await PostModel.query.where(PostModel.id == post_id).gino.first()
-    if post.enclosure[-3:] not in ('jpg', 'png') and post.title != post.description:
-        await TelegramSDK().send_message(chat_id=chat_id,
-                                         message="новость не соотвествует условию и не была отпарвленна в weibo",
-                                         reply_to_message_id=message_id)
+
+    if is_valid_post(post):
+        logging.exception('not valid post')
+        await telegram_sdk.send_message(message="новость не соотвествует условию и не была отпарвленна в weibo")
         return
 
     if post.status_posted is True:
-        await TelegramSDK().send_message(chat_id=chat_id,
-                                         message="новость уже была отправленна в weibo",
-                                         reply_to_message_id=message_id)
+        logging.exception('error post status_posted is True')
+        await telegram_sdk.send_message(message="новость уже была отправленна в weibo")
         return
 
     await post.update(status_posted=True).apply()
 
-    image = None
-    if post.enclosure[-3:] in ('jpg', 'png'):
-        image = await download_img(post.enclosure)
-
-    if post.title == post.description:
-        text = get_lightning_text(post)
-    else:
-        text = get_post_text(post)
-
-    # TODO хадкот чтобы в случаи падния повторно отпаравлять
+    text = get_post_text(post)
+    image = await download_img(post.enclosure)
     is_err = True
     for _ in range(3):
         try:
             await post_to_weibo(text, image)
             is_err = False
             break
-        except Exception as ex:
-            logging.exception('error send waibo', exc_info={
-                ex: ex
-            })
+        except Exception:
+            logging.exception('error send waibo')
 
     if is_err:
         logging.exception('error send post to weibo')
         await post.update(status_posted=False).apply()
-        await TelegramSDK().send_message(chat_id, 'Мне не удалось отправить этот пост в weibo\n'
-                                                  'но можно попробовать еще раз хотя я пробовал это уже 3 раза',
-                                         reply_to_message_id=message_id)
+        # обновляем кнопки чтобы можно было повторно отправить пост
+        await telegram_sdk.chat_edit_only_message_reply(
+            reply_markup=get_start_post_reply_markup(url=post.guid, post_id=post.id)
+        )
+        await telegram_sdk.send_message(
+            message='Мне не удалось отправить этот пост в weibo\n'
+                    'но можно попробовать еще раз хотя я пробовал это уже 3 раза',
+        )
         return
     reply_markup = {
         'inline_keyboard': [[
             {"text": "Сообщений успешно отправленно в weibo", "url": settings.WEIBO_HOST_URL},
         ]]
     }
-
-    await TelegramSDK().edit_only_message_reply(chat_id, message_id, reply_markup=reply_markup)
+    await telegram_sdk.chat_edit_only_message_reply(reply_markup=reply_markup)
 
     end_time = time.time() - start_time
-    await TelegramSDK().send_message(chat_id, f'Я успешно отправил в weibo, время: {end_time}', reply_to_message_id=message_id)
+    await telegram_sdk.send_message(f'Я успешно отправил в weibo, время: {end_time}')
 
 
 @bot_handler.callback_query(callback_key='post_message:id')
@@ -149,6 +136,7 @@ async def callback_send_post(message, _request):
 
     chat_id = message['user_info']['id']
     message_id = message['callback_query']['message']['message_id']
+    telegram = ChatTelegramSDK(chat_id=chat_id, message_id=message_id)
 
     reply_markup = {
         'inline_keyboard': [[
@@ -156,9 +144,8 @@ async def callback_send_post(message, _request):
         ]]
     }
 
-    await TelegramSDK().edit_only_message_reply(chat_id, message_id, reply_markup=reply_markup)
-
-    asyncio.ensure_future(send_message_weibo(chat_id, message_id, post_id))
+    await telegram.chat_edit_only_message_reply(reply_markup=reply_markup)
+    asyncio.ensure_future(send_message_weibo(telegram_sdk=telegram, post_id=post_id))
 
 
 @bot_handler.command(command='statistics')
@@ -196,21 +183,22 @@ order by 1 DESC;""")
     create_post_count_text = '\n'.join([f'{i.day.strftime("%d.%m")} - {i.count}' for i in create_post_count_list])
     send_weibo_count_text = '\n'.join([f'{i.day.strftime("%d.%m")} - {i.count}' for i in send_weibo_count_list])
 
-    schedule_work = '\n'.join([f'{i.day.strftime("%d.%m")} [{day_to_week[i.day.weekday()]}] c {i.min.strftime("%H:%M")} до {i.max.strftime("%H:%M")}'
+    schedule_work = '\n'.join([f'{i.day.strftime("%d.%m")} [{day_to_week[i.day.weekday()]}] c '
+                               f'{i.min.strftime("%H:%M")} до {i.max.strftime("%H:%M")}'
                                for i in send_weibo_count_list])
 
     message = 'Статистика за неделю в формате (дата, количество)\n\n'
     if send_weibo_count_text:
         message += 'Постов было отправленно в weibo: \n```\n' \
-                    f'{send_weibo_count_text} ```\n\n'
+            f'{send_weibo_count_text} ```\n\n'
 
     if create_post_count_text:
         message += 'Постов было записано в базу: \n```\n' \
-                    f'{create_post_count_text} \n```\n\n'
+            f'{create_post_count_text} \n```\n\n'
 
     if schedule_work:
         message += 'Примерный рафик рабоыт: \n```\n' \
-                    f'{schedule_work} ```'
+            f'{schedule_work} ```'
 
     await TelegramSDK().send_message(
         chat_id=chat_id,

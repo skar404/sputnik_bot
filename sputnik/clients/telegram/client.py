@@ -118,3 +118,23 @@ class TelegramSDK(TelegramClient):
     Тут логика валидации входных и отдаваемый данных
     """
     pass
+
+
+class ChatTelegramSDK(TelegramSDK):
+    def __init__(self, chat_id: str, message_id: int = None):
+        self.chat_id = chat_id
+        self.message_id = message_id
+
+    def get_message_id(self, message_id):
+        return self.message_id if self.message_id is None else message_id
+
+    async def chat_send_message(self, message: str, parse_mode: ParseMode = ParseMode.MARKDOWN, reply_markup=None,
+                                message_id=None):
+        message_id = self.get_message_id(message_id)
+        return await self.send_message(chat_id=self.chat_id, message=message, parse_mode=parse_mode,
+                                       reply_markup=reply_markup, reply_to_message_id=message_id)
+
+    async def chat_edit_only_message_reply(self, message_id=None, reply_markup=None):
+        message_id = self.get_message_id(message_id)
+        return await self.edit_only_message_reply(chat_id=self.chat_id, message_id=message_id,
+                                                  reply_markup=reply_markup)
