@@ -1,5 +1,5 @@
 from marshmallow import Schema
-from marshmallow.fields import Int, Bool, Str, Nested, Float
+from marshmallow.fields import Int, Bool, Str, Nested, Float, Raw
 from marshmallow.validate import OneOf
 
 
@@ -283,6 +283,8 @@ class MessageSchema(Schema):
     successful_payment = Nested(SuccessfulPaymentSchema)
     connected_website = Str()
     passport_data = Nested(PassportDataSchema)
+
+    reply_markup = Raw()
 
 
 class CallbackQuerySchema(Schema):
