@@ -84,9 +84,15 @@ async def send_message_weibo(chat_id, message_id, post_id):
 
     post: PostModel = await PostModel.query.where(PostModel.id == post_id).gino.first()
     if post.enclosure[-3:] not in ('jpg', 'png') and post.title != post.description:
+        await TelegramSDK().send_message(chat_id=chat_id,
+                                         message="новость не соотвествует условию и не была отпарвленна в weibo",
+                                         reply_to_message_id=message_id)
         return
 
     if post.status_posted is True:
+        await TelegramSDK().send_message(chat_id=chat_id,
+                                         message="новость уже была отправленна в weibo",
+                                         reply_to_message_id=message_id)
         return
 
     await post.update(status_posted=True).apply()
