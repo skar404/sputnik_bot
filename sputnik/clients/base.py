@@ -7,6 +7,10 @@ import async_timeout
 from aiohttp import ContentTypeError
 
 
+class BaseHttpError(Exception):
+    pass
+
+
 @dataclass
 class RequestData:
     json: Optional[dict] = None
@@ -40,15 +44,18 @@ class BaseClient:
         if self.PROXY_URL is not None:
             kwargs['proxy'] = self.PROXY_URL
 
-        with async_timeout.timeout(self.TIMEOUT):
-            async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=self.VERIFY_SSL)) as session:
-                async with session.request(*args, **kwargs) as response:
-                    req.code = response.status
-                    req.text = await response.text()
+        try:
+            with async_timeout.timeout(self.TIMEOUT):
+                async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=self.VERIFY_SSL)) as session:
+                    async with session.request(*args, **kwargs) as response:
+                        req.code = response.status
+                        req.text = await response.text()
 
-                    try:
-                        req.json = await response.json()
-                    except ContentTypeError:
-                        req.json = {}
+                        try:
+                            req.json = await response.json()
+                        except ContentTypeError:
+                            req.json = {}
+        except TimeoutError:
+            raise BaseHttpError()
 
         return req

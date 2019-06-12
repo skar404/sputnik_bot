@@ -6,7 +6,7 @@ from xml.etree import ElementTree
 from typing import List, Dict, Tuple
 
 from sputnik import settings
-from sputnik.clients.base import BaseClient
+from sputnik.clients.base import BaseClient, BaseHttpError
 from sputnik.settings import TG_PROXY_URL
 from sputnik.utils.short_link import get_short_link
 
@@ -33,6 +33,8 @@ class SputnikClintError(Exception):
 
 
 class SputnikClint(BaseClient):
+    TIMEOUT = 30
+
     async def get_rss(self):
         data = await self.get(settings.RSS_FEED)
         return data
@@ -148,8 +150,11 @@ class SputnikService(SputnikClint):
         :param post_id:
         :return:
         """
+        try:
+            req = await self.create_short_link(post_id)
+        except BaseHttpError:
+            raise SputnikClintError('error server')
 
-        req = await self.create_short_link(post_id)
         if req.code != 200:
             raise SputnikClintError(f'http code is {req.code}')
         return req.text
