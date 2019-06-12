@@ -78,7 +78,7 @@ async def send_message_weibo(telegram_sdk, post_id):
 
     post: PostModel = await PostModel.query.where(PostModel.id == post_id).gino.first()
 
-    if is_valid_post(post):
+    if not is_valid_post(post):
         logging.exception('not valid post')
         await telegram_sdk.send_message(message="новость не соотвествует условию и не была отпарвленна в weibo")
         return
