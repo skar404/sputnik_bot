@@ -38,6 +38,16 @@ async def send_message(post: PostModel):
             method_send = TelegramSDK().send_photo
 
         req = await method_send(**kwarg)
+        if req.code == 400 and req.json.get('description') == 'Bad Request: wrong file identifier/HTTP URL specified':
+            del kwarg['photo']
+            kwarg['message'] = 'Телеграму не удалось скачать фото, вот ссылка на него которую я загружу в weibo: {img}\n' \
+                               '{weibo_text} \n\nполная ссылка: {guid}\n\nтеги: {tags}'.format(
+                img=post.enclosure, weibo_text=weibo_text, guid=markdown_shielding(post.guid), tags=' '.join(tags_list)
+            )
+            req = await TelegramSDK().send_message(
+                **kwarg
+            )
+
         if req.code != 200:
             await TelegramSDK().send_message(
                 chat_id=user_id,
