@@ -69,7 +69,7 @@ async def post_to_weibo(text, image):
     async with WeiboParserService() as weibo_service:
         await weibo_service.login_user(settings.WEIBO_LOGIN, settings.WEIBO_PASSWORD)
         photo_id = None
-        if image is None:
+        if image is not None:
             photo_id = await weibo_service.get_id_and_push_image(image, settings.WEIBO_NICK)
         await weibo_service.create_post(text, photo_id)
 
