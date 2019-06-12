@@ -14,7 +14,7 @@ async def send_message(post: PostModel):
             short_link = await get_short_link(post.post_id, post.guid)
             await post.update(short_link=short_link).apply()
 
-        tags_list = {'#post', f'#id_{post.id}'}
+        tags_list = {'#post', f'#id\\_{post.id}'}
         if is_lightning(post):
             tags_list.add('#lightning')
         text_raw = get_post_text(post)
