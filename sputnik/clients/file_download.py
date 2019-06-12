@@ -6,7 +6,7 @@ import async_timeout
 from sputnik.utils.text import is_valid_post
 
 
-async def download_img(link, timeout=10):
+async def download_img(link, timeout=30):
     if is_valid_post(link) is False:
         return None
 

@@ -12,7 +12,7 @@ from sputnik.models.post import PostModel
 from sputnik.settings import BOT_TOKEN
 from sputnik.shortcuts.main import users_info, white_list, get_thank_message
 from sputnik.utils.telegram import get_start_post_reply_markup
-from sputnik.utils.text import get_post_text, is_valid_post
+from sputnik.utils.text import get_post_text, is_valid_post, is_lightning
 
 bot_handler = TelegramRouter(bot_token=BOT_TOKEN)
 
@@ -68,6 +68,7 @@ async def command_help(message, _request):
 async def post_to_weibo(text, image):
     async with WeiboParserService() as weibo_service:
         await weibo_service.login_user(settings.WEIBO_LOGIN, settings.WEIBO_PASSWORD)
+        photo_id = None
         if image is None:
             photo_id = await weibo_service.get_id_and_push_image(image, settings.WEIBO_NICK)
         await weibo_service.create_post(text, photo_id)
@@ -78,7 +79,7 @@ async def send_message_weibo(telegram_sdk: ChatTelegramSDK, post_id):
 
     post: PostModel = await PostModel.query.where(PostModel.id == post_id).gino.first()
 
-    if not is_valid_post(post):
+    if is_valid_post(post) is False and is_lightning(post) is False:
         logging.exception('not valid post')
         await telegram_sdk.chat_send_message(message="новость не соотвествует условию и не была отпарвленна в weibo")
         return
