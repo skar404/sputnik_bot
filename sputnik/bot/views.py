@@ -73,19 +73,19 @@ async def post_to_weibo(text, image):
         await weibo_service.create_post(text, photo_id)
 
 
-async def send_message_weibo(telegram_sdk, post_id):
+async def send_message_weibo(telegram_sdk: ChatTelegramSDK, post_id):
     start_time = time.time()
 
     post: PostModel = await PostModel.query.where(PostModel.id == post_id).gino.first()
 
     if not is_valid_post(post):
         logging.exception('not valid post')
-        await telegram_sdk.send_message(message="новость не соотвествует условию и не была отпарвленна в weibo")
+        await telegram_sdk.chat_send_message(message="новость не соотвествует условию и не была отпарвленна в weibo")
         return
 
     if post.status_posted is True:
         logging.exception('error post status_posted is True')
-        await telegram_sdk.send_message(message="новость уже была отправленна в weibo")
+        await telegram_sdk.chat_send_message(message="новость уже была отправленна в weibo")
         return
 
     await post.update(status_posted=True).apply()
@@ -108,7 +108,7 @@ async def send_message_weibo(telegram_sdk, post_id):
         await telegram_sdk.chat_edit_only_message_reply(
             reply_markup=get_start_post_reply_markup(url=post.guid, post_id=post.id)
         )
-        await telegram_sdk.send_message(
+        await telegram_sdk.chat_send_message(
             message='Мне не удалось отправить этот пост в weibo\n'
                     'но можно попробовать еще раз хотя я пробовал это уже 3 раза',
         )
@@ -121,7 +121,7 @@ async def send_message_weibo(telegram_sdk, post_id):
     await telegram_sdk.chat_edit_only_message_reply(reply_markup=reply_markup)
 
     end_time = time.time() - start_time
-    await telegram_sdk.send_message(f'Я успешно отправил в weibo, время: {end_time}')
+    await telegram_sdk.chat_send_message(f'Я успешно отправил в weibo, время: {end_time}')
 
 
 @bot_handler.callback_query(callback_key='post_message:id')
