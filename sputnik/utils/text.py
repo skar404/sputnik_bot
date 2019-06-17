@@ -36,6 +36,6 @@ def markdown_shielding(text: str) -> str:
 
 
 def is_valid_post(img_url):
-    if img_url is None and img_url[-3:] not in IMAGE_TYPE:
+    if img_url is None or img_url[-3:] not in IMAGE_TYPE:
         return False
     return True
