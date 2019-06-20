@@ -39,3 +39,11 @@ def is_valid_post(img_url):
     if img_url is None or img_url[-3:] not in IMAGE_TYPE:
         return False
     return True
+
+
+def is_send_post(post):
+    valid_img = is_valid_post(post.enclosure)
+
+    valid_lightning = is_lightning(post)
+
+    return valid_img or valid_lightning

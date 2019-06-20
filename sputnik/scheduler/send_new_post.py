@@ -5,7 +5,7 @@ from sputnik.models.post import PostModel
 from sputnik.settings import POST_USER
 from sputnik.utils.short_link import get_short_link
 from sputnik.utils.telegram import get_start_post_reply_markup
-from sputnik.utils.text import markdown_shielding, get_post_text, is_lightning, is_valid_post
+from sputnik.utils.text import markdown_shielding, get_post_text, is_lightning, is_send_post
 
 
 async def send_message(post: PostModel):
@@ -68,6 +68,6 @@ async def send_new_post():
         .gino.all()
 
     for post in posts_list:
-        if not is_valid_post(post.enclosure):
+        if not is_send_post(post):
             continue
         await send_message(post)
