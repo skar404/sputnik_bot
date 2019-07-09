@@ -4,7 +4,7 @@ asyncpg==0.18.3
 envparse==0.2.0
 gino==0.8.3
 manage.py==0.2.10
-marshmallow==3.0.0rc7
+marshmallow==3.0.0rc8
 rsa==4.0
 sentry-sdk==0.9.5
 
