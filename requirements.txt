@@ -1,5 +1,5 @@
 aiohttp==3.5.4
-APScheduler==3.6.0
+APScheduler==3.6.1
 asyncpg==0.18.3
 envparse==0.2.0
 gino==0.8.3
