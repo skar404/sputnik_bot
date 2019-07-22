@@ -1,6 +1,8 @@
+import logging
 from typing import List
 
 from sputnik.clients.telegram.client import TelegramSDK
+from sputnik.models.main import DataBase
 from sputnik.models.post import PostModel
 from sputnik.settings import POST_USER
 from sputnik.utils.short_link import get_short_link
@@ -22,8 +24,18 @@ async def send_message(post: PostModel):
         # replace is mix markdown
         weibo_text = markdown_shielding(text_raw)
 
-        message = '{weibo_text} \n\nполная ссылка: {guid}\n\nтеги: {tags}'.format(
-            weibo_text=weibo_text, guid=markdown_shielding(post.guid), tags=' '.join(tags_list)
+        text_send_count = ''
+        try:
+            curs = await DataBase.first("""select count(1) as count from post 
+                WHERE created_at >= now()::date and status_posted is TRUE;""")
+            send_count = curs.count
+            if send_count:
+                text_send_count = f'Сегодня я уже отправил {send_count}/25 постов\n'
+        except Exception:
+            logging.exception('error connect db')
+
+        message = '{text_count}{weibo_text} \n\nполная ссылка: {guid}\n\nтеги: {tags}'.format(
+            text_count=text_send_count, weibo_text=weibo_text, guid=markdown_shielding(post.guid), tags=' '.join(tags_list)
         )
 
         kwarg = {
