@@ -129,7 +129,7 @@ async def send_message_weibo(telegram_sdk: ChatTelegramSDK, post_id):
         WHERE created_at >= now()::date and status_posted is TRUE;""")
         send_count = curs.count
         if send_count:
-            text_send_count = f'Сегодня я уже отправил {send_count}\\25 постов\n'
+            text_send_count = f'Сегодня я уже отправил {send_count}/25 постов\n'
     except Exception:
         logging.exception('error connect db')
 
