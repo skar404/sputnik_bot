@@ -63,6 +63,9 @@ class SputnikService(SputnikClint):
                 if enclosure:
                     enclosure = enclosure[0]
 
+        if 'http' not in enclosure:
+            enclosure = f'http://sputniknews.cn{enclosure}'
+
         guid = item.findtext('guid')
         post_id = [i for i in guid.split('/') if i][-1]
         text = ElementTree.tostring(item, encoding='UTF-8').decode('utf-8')
@@ -80,7 +83,7 @@ class SputnikService(SputnikClint):
             pub_date=datetime.strptime(item.findtext('pubDate'), '%a, %d %b %Y %X %z').replace(tzinfo=None),
             description=description,
             category=item.findtext('category'),
-            enclosure='http://sputniknews.cn' + enclosure,
+            enclosure=enclosure,
 
             text=text
         )
