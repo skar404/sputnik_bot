@@ -80,7 +80,7 @@ class SputnikService(SputnikClint):
             pub_date=datetime.strptime(item.findtext('pubDate'), '%a, %d %b %Y %X %z').replace(tzinfo=None),
             description=description,
             category=item.findtext('category'),
-            enclosure=enclosure,
+            enclosure='http://sputniknews.cn' + enclosure,
 
             text=text
         )
