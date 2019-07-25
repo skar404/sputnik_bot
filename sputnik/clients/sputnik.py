@@ -63,7 +63,7 @@ class SputnikService(SputnikClint):
                 if enclosure:
                     enclosure = enclosure[0]
 
-        if 'http' not in enclosure:
+        if enclosure and 'http' not in enclosure:
             enclosure = f'http://sputniknews.cn{enclosure}'
 
         guid = item.findtext('guid')
