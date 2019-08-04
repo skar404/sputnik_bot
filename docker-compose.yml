@@ -112,6 +112,7 @@ services:
     volumes:
       - /srv/docker/ssl:/etc/nginx/ssl
       - ./nginx/app.conf:/etc/nginx/service.conf
+      - ./dist:frontend/app/
     ports:
       - "80:80"
       - "443:443"

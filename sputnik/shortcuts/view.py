@@ -6,7 +6,7 @@ class ReturnStatus:
     ERROR = 'ERROR'
 
 
-def success(message: str = None) -> Response:
+def success(message: object = None) -> Response:
     res = {}
     if message is not None:
         res.update({'result': message})

@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, sql, Boolean, false
+from sqlalchemy import Column, Integer, String, DateTime, sql, Boolean, false, desc
 
 from sputnik.models.main import DataBase
 
@@ -28,3 +28,7 @@ class PostModel(DataBase.Model):
 
     status_posted = Column(Boolean, default=False, index=True)
     status_send_tg = Column(Boolean, server_default=false(), index=True, nullable=False)
+
+    @classmethod
+    async def filter(cls, limit: int = 10):
+        return await cls.query.order_by(desc(cls.id)).limit(limit=limit).gino.all()
