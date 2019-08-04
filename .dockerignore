@@ -2,3 +2,4 @@ venv/
 README.md
 .drone.yml
 nginx/
+frontend/
