@@ -128,7 +128,12 @@ async def send_message_weibo(telegram_sdk: ChatTelegramSDK, post_id):
         curs = await DataBase.first("""select count(1) as count from post 
         WHERE created_at >= now()::date and status_posted is TRUE;""")
         send_count = curs.count
-        if send_count:
+
+        if not send_count:
+            text_send_count = f'Это ваш первый пост в Weibo сегодня\n' \
+                              f'По этой причине я хочу пожелать вам удачного рабочего дня и возможно доброго утра :)\n' \
+                              f'Всегда ваш - Бот v2019.1\n'
+        elif send_count:
             text_send_count = f'Сегодня я уже отправил {send_count}/25 постов\n'
     except Exception:
         logging.exception('error connect db')
