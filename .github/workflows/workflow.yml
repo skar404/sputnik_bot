@@ -9,5 +9,5 @@ jobs:
     - name: Build imag
       run: |
         docker login docker.pkg.github.com -u skar404 -p ${{ secrets.DOCKER_TOKEN }}
-        docker build . -t docker.pkg.github.com/skar404/sputnik_bot/app:1.0 
+        docker build . --file Dockerfile -t docker.pkg.github.com/skar404/sputnik_bot/app:1.0
         docker push docker.pkg.github.com/skar404/sputnik_bot/app:1.0
