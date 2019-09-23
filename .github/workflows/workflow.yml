@@ -11,7 +11,7 @@ jobs:
       run: |
         docker login docker.pkg.github.com -u skar404 -p ${{ secrets.DOCKER_TOKEN }}
         docker pull docker.pkg.github.com/skar404/sputnik_bot/app:latest
-        docker build . --file Dockerfile -t docker.pkg.github.com/skar404/sputnik_bot/app:latest
+        docker build . --file Dockerfile -t docker.pkg.github.com/skar404/sputnik_bot/app:${{ github.sha }}
         docker push docker.pkg.github.com/skar404/sputnik_bot/app:${{ github.sha }}
         docker tag docker.pkg.github.com/skar404/sputnik_bot/app:${{ github.sha }} docker.pkg.github.com/skar404/sputnik_bot/app:latest
         docker push docker.pkg.github.com/skar404/sputnik_bot/app:latest
