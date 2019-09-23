@@ -6,8 +6,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v1
     - name: Build imag
       run: |
+        ls -Ahl
         docker login docker.pkg.github.com -u skar404 -p ${{ secrets.DOCKER_TOKEN }}
         ls -Ahl
         docker build . --file Dockerfile -t docker.pkg.github.com/skar404/sputnik_bot/app:1.0
