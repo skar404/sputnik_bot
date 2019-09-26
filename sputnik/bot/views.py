@@ -129,7 +129,7 @@ async def send_message_weibo(telegram_sdk: ChatTelegramSDK, post_id):
         WHERE created_at >= now()::date and status_posted is TRUE;""")
         send_count = curs.count
 
-        if not send_count:
+        if send_count == 1 or send_count == '1':
             text_send_count = f'Это ваш первый пост в Weibo сегодня\n' \
                               f'По этой причине я хочу пожелать вам удачного рабочего дня и возможно доброго утра :)\n' \
                               f'Всегда ваш - Бот v2019.1\n'
