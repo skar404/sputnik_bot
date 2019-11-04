@@ -7,7 +7,7 @@ manage.py==0.2.10
 marshmallow==3.2.0
 rsa==4.0
 sentry-sdk==0.12.1
-prometheus-sanic=0.2.1
+prometheus-sanic==0.2.1
 
 # migration
 alembic==1.1.0
