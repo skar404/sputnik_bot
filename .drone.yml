@@ -48,11 +48,12 @@ pipeline:
       branch: master
       event: push
 
-services:
-  database:
-    image: postgres:9-alpine
-    ports:
-    - 5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
+# TODO: server stop, holidays : )
+# services:
+#   database:
+#     image: postgres:9-alpine
+#     ports:
+#     - 5432
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_DB: postgres
