@@ -1,8 +1,0 @@
-pytest
-asynctest
-async_generator
-pytest-asyncio
-
-codecov
-pytest-cov
-pytest-aiohttp
