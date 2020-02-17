@@ -1,6 +1,7 @@
 package weibo
 
 import (
+	"bufio"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"math"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -56,6 +58,7 @@ func stringToBase64(data string) string {
 // Login
 // TODO refactoring
 //   пока для переоса логики пишу лапшу
+//   передавать куку между запросами
 func (c *Config) Login(login string, password string) {
 	c.login = login
 	c.password = password
@@ -64,8 +67,20 @@ func (c *Config) Login(login string, password string) {
 		Timeout: c.Timeout,
 	}
 
+	req, err := http.NewRequest("GET", c.WeiboUrl+"login.php", nil)
+	if err != nil {
+		// TODO return correct error
+		return
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		// TODO return correct error
+		return
+	}
+
 	// базовый запрос для получения ключа для логина
-	req, err := http.NewRequest("GET", c.SinaUrl+"sso/prelogin.php", nil)
+	req, err = http.NewRequest("GET", c.SinaUrl+"sso/prelogin.php", nil)
 	if err != nil {
 		// TODO return correct error
 		return
@@ -84,9 +99,10 @@ func (c *Config) Login(login string, password string) {
 	q.Add("client", "ssologin.js(v1.4.18)")
 	q.Add("pre_url", timeStamp)
 	req.URL.RawQuery = q.Encode()
+	req.Header = resp.Header
 	fmt.Println(req.URL.String())
 
-	resp, err := client.Do(req)
+	resp, err = client.Do(req)
 	if err != nil {
 		// TODO return correct error
 		return
@@ -130,6 +146,7 @@ func (c *Config) Login(login string, password string) {
 	q.Add("s", "0")
 	q.Add("p", loginReq.PcId)
 	req.URL.RawQuery = q.Encode()
+	req.Header = resp.Header
 	fmt.Println(req.URL.String())
 
 	client = &http.Client{
@@ -154,4 +171,61 @@ func (c *Config) Login(login string, password string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter captcha: ")
+	captcha, _ := reader.ReadString('\n')
+
+	// Логинемся c кукой
+	d := url.Values{}
+	d.Set("door", captcha)
+	d.Set("entry", "weibo")
+	d.Set("gateway", "1")
+	d.Set("from", "")
+	d.Set("savestate", "7")
+	d.Set("useticket", "1")
+	d.Set("pagerefer", "http://login.sina.com.cn/sso/logout.php?entry=miniblog&r=http%3A%2F%2Fweibo.com%2Flogout.php%3Fbackurl")
+	d.Set("vsnf", "1")
+	d.Set("su", loginBase64)
+	d.Set("service", "miniblog")
+	d.Set("servertime", strconv.Itoa(loginReq.ServerTime))
+	d.Set("nonce", loginReq.Nonce)
+	d.Set("pwencode", "rsa2")
+	d.Set("rsakv", loginReq.RsaKv)
+	d.Set("sp", password)
+	d.Set("sr", "1366*768")
+	d.Set("encoding", "UTF-8")
+	d.Set("prelt", "115")
+	d.Set("url", "http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack")
+	d.Set("returntype", "META")
+
+	req, err = http.NewRequest("POST", c.SinaUrl+"sso/login.php?client=ssologin.js(v1.4.18)", strings.NewReader(d.Encode()))
+	if err != nil {
+		// TODO return correct error
+		return
+	}
+	req.Header = resp.Header
+
+	client = &http.Client{
+		Timeout: c.Timeout,
+	}
+	resp, _ = client.Do(req)
+	defer resp.Body.Close()
+	respBody, _ = ioutil.ReadAll(resp.Body)
+
+	// api отдает данный формата и так избавляемся от лишнего:
+	// sinaSSOController.preloginCallBack({валидный json})
+	fmt.Println(string(respBody))
+
+	// Проверяем что мы пошли
+
+	req, err = http.NewRequest("GET", "https://login.sina.com.cn/signup/signin.php?entry=sso", nil)
+	if err != nil {
+		// TODO return correct error
+		return
+	}
+	req.Header = resp.Header
+	resp, _ = client.Do(req)
+	respBody, _ = ioutil.ReadAll(resp.Body)
+	fmt.Println(string(respBody))
 }
