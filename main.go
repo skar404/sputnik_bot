@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"sputnik_bok/app/client/weibo"
+	"sputnik_bok/weibo"
 )
 
 func main() {
