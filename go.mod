@@ -1,3 +1,3 @@
-module sputnik_bok
+module github.com/skar404/sputnik_bok
 
-go 1.13
+go 1.14
