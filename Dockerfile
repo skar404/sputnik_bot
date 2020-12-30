@@ -8,7 +8,7 @@ RUN go mod download
 COPY . .
 RUN go build -o bin/sputnik_bot
 
-FROM alpine
+FROM alpine:3.12
 
 RUN apk --no-cache add ca-certificates
 
