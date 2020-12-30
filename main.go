@@ -22,6 +22,8 @@ var DB = redis.NewClient(&redis.Options{
 func main() {
 	log.Println("Start app")
 
+	index := 0
+
 	for true {
 		rssFeed := sputnik.Rss{}
 		err := sputnik.GetRss(&rssFeed)
@@ -30,8 +32,11 @@ func main() {
 		}
 		Notification(&rssFeed)
 
-		log.Println("global 15s sleep ...")
+		if (index % 10) == 0 {
+			log.Printf("global 15s sleep ... index=%d\n", index)
+		}
 		time.Sleep(15 * time.Second)
+		index += 1
 	}
 }
 
