@@ -4,14 +4,15 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 
-	"github.com/skar404/sputnik_bok/global"
-	"github.com/skar404/sputnik_bok/requests"
+	"github.com/skar404/sputnik_bot/global"
+	"github.com/skar404/sputnik_bot/requests"
 )
 
 type Rss struct {
@@ -86,12 +87,10 @@ var SputnikShortLinkClient = requests.RequestClient{
 }
 
 var DB = redis.NewClient(&redis.Options{
-	Addr:     "localhost:6370",
+	Addr:     global.DB_HOST,
 	Password: "", // no password set
 	DB:       0,  // use default DB
 })
-
-var UniqLink []string
 
 type TgPost struct {
 	Message   string
@@ -110,6 +109,8 @@ type sendMessageReq struct {
 }
 
 func main() {
+	log.Println("Start app")
+
 	for true {
 		rssFeed := Rss{}
 		err := GetRss(&rssFeed)
@@ -126,15 +127,15 @@ func Notification(r *Rss) {
 	for _, v := range r.Channel.Item {
 		ctx := context.Background()
 		if v.Link == "" {
-			fmt.Println(fmt.Sprintf("error get short item=%+v", v))
+			log.Println(fmt.Sprintf("error get short item=%+v", v))
 			continue
 		}
 
 		val, err := DB.Get(ctx, v.Link).Result()
 		if err == redis.Nil {
-			fmt.Printf("new post link=%s\n", v.Link)
+			log.Printf("new post link=%s\n", v.Link)
 		} else if err != nil {
-			fmt.Printf("redis is err=%s\n", err)
+			log.Printf("redis is err=%s\n", err)
 			continue
 		}
 
@@ -144,7 +145,7 @@ func Notification(r *Rss) {
 
 		linkShort, err := GetShortLink(v.Link)
 		if err != nil {
-			fmt.Println(fmt.Sprintf("error get short link err=%s", err))
+			log.Println(fmt.Sprintf("error get short link err=%s", err))
 		}
 
 		link := v.Link
@@ -178,11 +179,11 @@ func Notification(r *Rss) {
 
 		err = SendTelegram(&tgPost)
 		if err != nil {
-			fmt.Println(fmt.Sprintf("error send telegram err=%s post=%+v", err, tgPost))
+			log.Println(fmt.Sprintf("error send telegram err=%s post=%+v", err, tgPost))
 		}
 
 		if err := DB.Set(ctx, v.Link, fmt.Sprintf("%+v", v), 0).Err(); err != nil {
-			fmt.Printf("redis is err=%s\n", err)
+			log.Printf("redis is err=%s\n", err)
 		}
 	}
 }

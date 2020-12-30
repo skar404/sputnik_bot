@@ -9,6 +9,7 @@ var (
 	TG_TOKEN               = os.Getenv("TG_TOKEN")
 	TG_CHAT, _             = strconv.Atoi(os.Getenv("TG_CHAT"))
 	SPUTNIK_SHORT_LINK_URL = os.Getenv("SPUTNIK_SHORT_LINK_URL")
+	DB_HOST                = getEnv("DB_HOST", "localhost:6370")
 )
 
 func getEnv(key, fallback string) string {
