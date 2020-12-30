@@ -223,6 +223,9 @@ func SendTelegram(m *TgPost) error {
 	}
 
 	if res.Code != 200 {
+		log.Println("15s sleep ...")
+		time.Sleep(15 * time.Second)
+
 		return fmt.Errorf("error code=%d body=%s", res.Code, res.Body)
 	}
 
