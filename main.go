@@ -127,7 +127,7 @@ func main() {
 		}
 		Notification(&rssFeed)
 
-		log.Println("15s sleep ...")
+		log.Println("global 15s sleep ...")
 		time.Sleep(15 * time.Second)
 	}
 }
@@ -190,7 +190,7 @@ func Notification(r *Rss) {
 		if err != nil {
 			log.Println(fmt.Sprintf("error send telegram err=%s post=%+v", err, tgPost))
 
-			log.Println("15s sleep ...")
+			log.Println("telegram 15s sleep ...")
 			time.Sleep(15 * time.Second)
 		}
 

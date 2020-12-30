@@ -1,4 +1,4 @@
-VERSION:=1.0.3
+VERSION:=1.0.4
 IMAGE:=cr.yandex/crpkmcbem8um7rd1gk5i/sputnik_bot
 
 build:
