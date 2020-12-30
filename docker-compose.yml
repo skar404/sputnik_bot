@@ -7,3 +7,11 @@ services:
     restart: always
     ports:
       - "6370:6379"
+
+  app:
+    image: cr.yandex/crpkmcbem8um7rd1gk5i/sputnik_bot:1.0.0
+    environment:
+      - TG_TOKEN=""
+      - TG_CHAT=""
+      - SPUTNIK_SHORT_LINK_URL=""
+      - DB_HOST=""
