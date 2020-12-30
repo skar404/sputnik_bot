@@ -9,7 +9,7 @@ import (
 type Request struct {
 	Method    string
 	Uri       string
-	JsonBody  map[string]interface{}
+	JsonBody  interface{}
 	UrlValues url.Values
 	Header    http.Header
 
