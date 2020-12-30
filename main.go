@@ -70,6 +70,10 @@ type Rss struct {
 var SputnikClient = requests.RequestClient{
 	Url:     "http://sputniknews.cn/export/rss2/archive/index.xml",
 	Timeout: 10 * time.Second,
+	Header: map[string][]string{
+		"Accept-Language": {"en,en-US;q=0.8,ru-RU;q=0.5,ru;q=0.3"},
+		"User-Agent":      {"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:85.0) Gecko/20100101 Firefox/85.0"},
+	},
 }
 
 var TelegramClient = requests.RequestClient{
@@ -84,6 +88,10 @@ var TelegramClient = requests.RequestClient{
 var SputnikShortLinkClient = requests.RequestClient{
 	Url:     global.SPUTNIK_SHORT_LINK_URL,
 	Timeout: 10 * time.Second,
+	Header: map[string][]string{
+		"Accept-Language": {"en,en-US;q=0.8,ru-RU;q=0.5,ru;q=0.3"},
+		"User-Agent":      {"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:85.0) Gecko/20100101 Firefox/85.0"},
+	},
 }
 
 var DB = redis.NewClient(&redis.Options{
@@ -119,7 +127,8 @@ func main() {
 		}
 		Notification(&rssFeed)
 
-		time.Sleep(1 * time.Second)
+		log.Println("15s sleep ...")
+		time.Sleep(15 * time.Second)
 	}
 }
 
@@ -180,6 +189,9 @@ func Notification(r *Rss) {
 		err = SendTelegram(&tgPost)
 		if err != nil {
 			log.Println(fmt.Sprintf("error send telegram err=%s post=%+v", err, tgPost))
+
+			log.Println("15s sleep ...")
+			time.Sleep(15 * time.Second)
 		}
 
 		if err := DB.Set(ctx, v.Link, fmt.Sprintf("%+v", v), 0).Err(); err != nil {
@@ -223,9 +235,6 @@ func SendTelegram(m *TgPost) error {
 	}
 
 	if res.Code != 200 {
-		log.Println("15s sleep ...")
-		time.Sleep(15 * time.Second)
-
 		return fmt.Errorf("error code=%d body=%s", res.Code, res.Body)
 	}
 
