@@ -3,12 +3,15 @@ package requests
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 )
+
+var BadGateway = errors.New("bat gateway")
 
 func (c *RequestClient) getUrl(uri string) string {
 	return c.Url + uri
@@ -68,6 +71,13 @@ func (c *RequestClient) NewRequest(req *Request, res *Response) error {
 
 	if req.Flags.IsBodyString {
 		res.Body = string(res.BodyRaw)
+	}
+
+	if res.Struct != nil {
+		err = json.Unmarshal(res.BodyRaw, &res.Struct)
+		if err != nil {
+			return err
+		}
 	}
 
 	return err

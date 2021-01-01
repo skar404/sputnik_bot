@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 
+	"github.com/skar404/sputnik_bot/bitly"
 	"github.com/skar404/sputnik_bot/global"
 	"github.com/skar404/sputnik_bot/sputnik"
 	"github.com/skar404/sputnik_bot/telegram"
@@ -62,7 +63,15 @@ func Notification(r *sputnik.Rss) {
 
 		linkShort, err := sputnik.GetShortLink(v.Link)
 		if err != nil {
-			log.Println(fmt.Sprintf("error get short link err=%s", err))
+			log.Println(fmt.Sprintf("error sputnik get short link err=%s", err))
+		}
+
+		if linkShort == "" {
+			linkShort, err = bitly.CreateLink(v.Link)
+
+			if err != nil {
+				log.Println(fmt.Sprintf("error bitly get short link err=%s", err))
+			}
 		}
 
 		link := v.Link

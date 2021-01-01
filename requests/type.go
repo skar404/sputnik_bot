@@ -32,5 +32,7 @@ type Response struct {
 	BodyRaw []byte
 	Body    string
 
+	Struct interface{}
+
 	Header http.Header
 }
