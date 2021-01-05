@@ -100,15 +100,18 @@ func Notification(r *sputnik.Rss) {
 		}
 
 		if lightningText != "" {
-			message = fmt.Sprintf("快讯：%s", lightningText)
+			message = fmt.Sprintf("快讯：%s %s", lightningText, link)
 		} else {
 			message = fmt.Sprintf("【%s】%s %s", v.Title, v.Description, link)
 		}
 
 		message = fmt.Sprintf(
 			"%s\n\n"+
-				"ссылка на новость:\n<code>%s</code>\n"+
-				"фото:\n<code>%s</code>", message, v.Link, img)
+				"ссылка на новость:\n<code>%s</code>", message, v.Link)
+
+		if img != "" {
+			message += fmt.Sprintf("\nфото:\n<code>%s</code>", img)
+		}
 
 		tgPost := telegram.TgPost{
 			Message: message,
