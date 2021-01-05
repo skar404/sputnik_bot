@@ -19,10 +19,9 @@ var Client = requests.RequestClient{
 }
 
 type TgPost struct {
-	Message   string
-	Link      string
-	ShortLink string
-	Img       string
+	Message string
+	Img     string
+	Video   string
 }
 
 type smartMessageReq struct {
@@ -32,6 +31,7 @@ type smartMessageReq struct {
 
 	Caption string `json:"caption,omitempty"`
 	Photo   string `json:"photo,omitempty"`
+	Video   string `json:"video,omitempty"`
 }
 
 func SendTelegram(m *TgPost) error {
@@ -46,7 +46,11 @@ func SendTelegram(m *TgPost) error {
 		Mode:   "HTML",
 	}
 
-	if m.Img != "" {
+	if m.Video != "" {
+		methodType = "sendVideo"
+		message.Video = m.Video
+		message.Caption = m.Message
+	} else if m.Img != "" {
 		methodType = "sendPhoto"
 		message.Photo = m.Img
 		message.Caption = m.Message
@@ -69,6 +73,8 @@ func SendTelegram(m *TgPost) error {
 	}
 
 	if res.Code != 200 {
+		// {"ok":false,"error_code":400,"description":"Bad Request: wrong file identifier/HTTP URL specified"}
+		// {"ok":false,"error_code":400,"description":"Bad Request: wrong file identifier/HTTP URL specified"}
 		return fmt.Errorf("error code=%d body=%s", res.Code, res.Body)
 	}
 

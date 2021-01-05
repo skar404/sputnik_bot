@@ -85,8 +85,18 @@ func Notification(r *sputnik.Rss) {
 		}
 
 		var message string
-		if v.Title == v.Description {
-			message = fmt.Sprintf("快讯：%s %s", v.Title, link)
+		var lightningText string
+
+		if v.Text == v.Description || v.Text == "" || v.Description == "" {
+			if v.Text != "" {
+				lightningText = v.Text
+			} else if v.Description != "" {
+				lightningText = v.Description
+			}
+		}
+
+		if lightningText != "" {
+			message = fmt.Sprintf("快讯：%s", lightningText)
 		} else {
 			message = fmt.Sprintf("【%s】%s %s", v.Title, v.Description, link)
 		}
@@ -97,10 +107,8 @@ func Notification(r *sputnik.Rss) {
 				"фото:\n<code>%s</code>", message, v.Link, img)
 
 		tgPost := telegram.TgPost{
-			Message:   message,
-			Link:      v.Link,
-			ShortLink: linkShort,
-			Img:       img,
+			Message: message,
+			Img:     img,
 		}
 
 		err = telegram.SendTelegram(&tgPost)
