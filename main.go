@@ -87,12 +87,16 @@ func Notification(r *sputnik.Rss) {
 		var message string
 		var lightningText string
 
-		if v.Text == v.Description || v.Text == "" || v.Description == "" {
-			if v.Text != "" {
-				lightningText = v.Text
+		if v.Title == v.Description || v.Title == "" || v.Description == "" {
+			if v.Title != "" {
+				lightningText = v.Title
 			} else if v.Description != "" {
 				lightningText = v.Description
 			}
+		}
+
+		if v.Link == "http://sputniknews.cn/economics/202101061032834250/" {
+			println()
 		}
 
 		if lightningText != "" {
