@@ -1,4 +1,4 @@
-VERSION:=1.1.4
+VERSION:=1.1.6
 IMAGE:=cr.yandex/crpkmcbem8um7rd1gk5i/sputnik_bot
 
 build:
@@ -7,3 +7,5 @@ build:
 push:
 	docker push ${IMAGE}:${VERSION}
 	docker push ${IMAGE}
+
+deploy: build push

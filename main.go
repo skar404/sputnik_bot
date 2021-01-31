@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -87,7 +88,8 @@ func Notification(r *sputnik.Rss) {
 		var message string
 		var lightningText string
 
-		if v.Title == v.Description || v.Title == "" || v.Description == "" {
+		if strings.ReplaceAll(v.Title, "。", "") == strings.ReplaceAll(v.Description, "。", "") ||
+			v.Title == "" || v.Description == "" {
 			if v.Title != "" {
 				lightningText = v.Title
 			} else if v.Description != "" {
@@ -95,14 +97,17 @@ func Notification(r *sputnik.Rss) {
 			}
 		}
 
-		if v.Link == "http://sputniknews.cn/economics/202101061032834250/" {
-			println()
-		}
-
 		if lightningText != "" {
 			message = fmt.Sprintf("快讯：%s %s", lightningText, link)
 		} else {
-			message = fmt.Sprintf("【%s】%s %s", v.Title, v.Description, link)
+			newDescription := v.Description
+			if string([]rune(v.Description)[:8]) == "俄罗斯卫星通讯社" {
+				ss := strings.SplitAfterN(v.Description, "电", 2)
+				if len(ss) == 2 {
+					newDescription = ss[1]
+				}
+			}
+			message = fmt.Sprintf("【%s】%s %s", v.Title, newDescription, link)
 		}
 
 		message = fmt.Sprintf(
